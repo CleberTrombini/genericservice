@@ -1,0 +1,14 @@
+/adapters/
+/backup/
+/classes/
+/jsp/
+/logging.xml
+/mvc-dispatch-context.xml
+/oeablSecurity.csv
+/oeablSecurity.properties
+/oeablSecurity.xml
+/security.tld
+/users.properties
+/web.xml
+/spring/
+/tlr/
