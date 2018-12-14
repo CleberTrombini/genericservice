@@ -37,6 +37,8 @@ field Discount as integer initial "0" label "Discount"
 field Comments as character label "Comments"
 field Fax as character label "Fax"
 field EmailAddress as character label "Email"
+field id as character
+field seq as integer
 index Comments  Comments  ascending 
 index CountryPost  Country  ascending  PostalCode  ascending 
 index CustNum is  primary  unique  CustNum  ascending 

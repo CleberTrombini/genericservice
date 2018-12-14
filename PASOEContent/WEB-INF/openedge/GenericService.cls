@@ -29,25 +29,25 @@ class GenericService inherits WebHandler:
         define variable entityName2 as character         no-undo.
         define variable id1         as character         no-undo.
         define variable id2         as character         no-undo.
-        define variable dossier     as integer           no-undo.
-           
         define variable queryString as character         no-undo.        
-        define variable filter      as FilterParams      no-undo.
         define variable oFieldlist  as character         no-undo.
+        
+        define variable filter      as FilterParams      no-undo.
         define variable lOk         as logical           no-undo.   
         
         define variable entity      as GenericEntity     no-undo.
-        
         define variable dynClass    as IBusinessEntity   no-undo.
+        define variable dynClass2   as IBusinessEntity  no-undo.
+        
         define variable hDataSet    as handle            no-undo.
         define variable hTempTable  as handle            no-undo.
-        
+        define variable hCP         as handle            no-undo.
+       
         define variable jsonObject  as JsonObject        no-undo.       
         define variable jsonArray   as JsonArray         no-undo.
         
-        define variable hCP         as handle            no-undo.
-       
-        entityName  = "restapi." + poRequest:GetPathParameter("entityname").
+        
+        entityName  = poRequest:GetPathParameter("entityname").
         entityName2 = poRequest:GetPathParameter("entityname2").
         id1         = poRequest:GetPathParameter("id1").
         id2         = poRequest:GetPathParameter("id2").
@@ -78,23 +78,14 @@ class GenericService inherits WebHandler:
                 if idx > 0 then 
                 do:
                     cName = substring(cParam, 1, idx - 1).
-                    cValue = substring(cParam, idx + 1).
-                    cValue = OpenEdge.Net.URI:Decode(cValue).
-                    message "DEBUG: cParam: " cParam cName cValue.
-                    //Parse through the query string and assign values to our FilterParams object        
+                    cValue = OpenEdge.Net.URI:Decode(substring(cParam, idx + 1)).
                     case cName:
                         when "sort_by" then 
-                        do:
                             filter:SortBy = entry(2,cParam,"=").
-                        end.
                         when "limit" then
-                        do:
                             filter:TopRecs = integer(entry(2,cParam,"=")).
-                        end.
                         when "offset" then
-                        do:
                             filter:SkipRecs = integer(entry(2,cParam,"=")).
-                        end.
                         otherwise do:
                             filter:FieldList = left-trim(filter:FieldList + "," + cName, ",").
                         
@@ -108,25 +99,47 @@ class GenericService inherits WebHandler:
                 end.
             end.
         end.
-        
-        entity = new GenericEntity(entityName).
-                
-        dynClass = dynamic-new entityName () no-error.                
-        
+        lOk = true.
+        entity = new GenericEntity("restapi." + entityName).
+        dynClass = dynamic-new string("restapi." + entityName) () no-error.                
+
         if dynClass = ? then 
         do:
-            body = string("Entity " + entry(2, entityName, ".")  + " does not exist").
+            jsonObject = new JsonObject().
+            jsonObject:Add("Error", "Following entities do not exist for this api").
+            jsonObject:Add("Entity", entityName ).
+            body = jsonObject:GetJsonText().
         end.
         else 
         do:
-            lOk = true.
-            if filter:where > "" then do:
-                
-                dynClass:CheckFieldList(filter:FieldList, output oFieldList, output lOk).
-                message "lOk" lOk.
+            if entityName2 > "" then
+            do:
+                entity = new GenericEntity("restapi." + entityName2).
+                dynClass2 = dynamic-new string("restapi." + entityName2) () no-error .
+                if dynClass2 = ? then
+                do:
+                    jsonObject = new JsonObject().
+                    jsonObject:Add("Error", "Following entity does not exist for this api").
+                    jsonObject:Add("Entity", entityName2 ).
+                    body = jsonObject:GetJsonText().
+                end.
+                else
+                do:
+                    if filter:where > "" then 
+                    do:
+                        dynClass2:CheckFieldList(filter:FieldList, output oFieldList, output lOk).
+                    end.
+                end.  
             end.
-            if lOk then do: 
-                message "check".
+            else 
+            do:
+                if filter:where > "" then 
+                do:
+                    dynClass:CheckFieldList(filter:FieldList, output oFieldList, output lOk).
+                end.
+            end.
+            if lOk then 
+            do: 
                 dynClass:Read(filter, output DATASET-HANDLE hDataSet).
                 message hDataSet:num-buffers.
                 hTempTable = hDataSet:get-buffer-handle():table-handle.
@@ -140,7 +153,7 @@ class GenericService inherits WebHandler:
                 jsonObject:Add("Fields", oFieldList).
                 body = jsonObject:GetJsonText().
             end.
-                
+                        
         end.
         
         response = new WebResponse().        
@@ -151,8 +164,6 @@ class GenericService inherits WebHandler:
             response:ContentType = "application/json".
             writer:write(body).
         end.
-
-        message "Before Flush".
         writer:flush().
         writer:close().            
     end method.

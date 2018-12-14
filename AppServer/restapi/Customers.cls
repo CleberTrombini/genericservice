@@ -13,7 +13,7 @@ using OpenEdge.BusinessLogic.BusinessEntity.
 
 block-level on error undo, throw.
 
-class restapi.Customers inherits BusinessEntity:
+class restapi.Customers inherits BusinessEntity implements IBusinessEntity:
     /*------------------------------------------------------------------------------
             Purpose:                                                                      
             Notes:                                                                        
@@ -22,6 +22,7 @@ class restapi.Customers inherits BusinessEntity:
     {"restapi\customers.i"}
     
     define data-source srcCustomer for sports2000.Customer.
+    define variable iSeq as integer no-undo.
     
     
     /*------------------------------------------------------------------------------
@@ -52,6 +53,11 @@ class restapi.Customers inherits BusinessEntity:
         this-object:SkipList = cSkipListArray.
                  
     end constructor.
+    
+    method public void Read(input filter as FilterParams, output dataset-handle hDataset):
+    
+       
+    end method.
         
     /*------------------------------------------------------------------------------
             Purpose:  Get one or more records, based on a filter string                                                                     
@@ -64,6 +70,8 @@ class restapi.Customers inherits BusinessEntity:
         super:ReadData(filter).
               
     end method.
+    
+    {restapi/inc/filter_support.i &entity=customer}
       
     /*------------------------------------------------------------------------------
             Purpose: Create one or more new records                                                               
