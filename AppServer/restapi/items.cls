@@ -19,7 +19,7 @@ class restapi.items inherits BusinessEntity implements IBusinessEntity:
             Notes:                                                                        
     ------------------------------------------------------------------------------*/
     
-    {"restapi\items.i"}
+    {"restapi\inc\items.i"}
      
     define data-source srcItem for sports2000.Item.
     define variable iSeq as integer no-undo.

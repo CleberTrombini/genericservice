@@ -1,6 +1,6 @@
  
  /*------------------------------------------------------------------------
-    File        : Customers
+    File        : customers
     Syntax      : 
     Author(s)   : rdroge
     Created     : Thu Dec 13 12:49:18 CET 2018
@@ -10,16 +10,19 @@
 
 using Progress.Lang.*.
 using OpenEdge.BusinessLogic.BusinessEntity.
+using restapi.orders.
+
 
 block-level on error undo, throw.
 
-class restapi.Customers inherits BusinessEntity implements IBusinessEntity:
+class restapi.customers inherits BusinessEntity implements IBusinessEntity:
     /*------------------------------------------------------------------------------
             Purpose:                                                                      
             Notes:                                                                        
     ------------------------------------------------------------------------------*/
     
-    {"restapi\customers.i"}
+    {"restapi\inc\customers.i"}
+  
     
     define data-source srcCustomer for sports2000.Customer.
     define variable iSeq as integer no-undo.
@@ -29,7 +32,7 @@ class restapi.Customers inherits BusinessEntity implements IBusinessEntity:
             Purpose:                                                                      
             Notes:                                                                        
     ------------------------------------------------------------------------------*/
-    constructor public Customers():
+    constructor public customers():
         
         define variable hDataSourceArray as handle no-undo extent 1.
         define variable cSkipListArray as character no-undo extent 1.
@@ -56,28 +59,52 @@ class restapi.Customers inherits BusinessEntity implements IBusinessEntity:
     
     method public void Read(input filter as FilterParams, output dataset-handle hDataset):
     
-       
+        if (filter:id1 > "" and filter:id2 = "") then 
+        do:
+            this-object:GetSinglecustomer(filter, output dataset-handle hDataset).
+        end.
+        else if filter:filtered=true then 
+        do:
+            this-object:GetFilteredCustomers(filter, output dataset-handle hDataSet).
+        end.
+        else do:
+            this-object:GetAllCustomers(output dataset-handle hDataSet).
+        end.
+        
     end method.
         
     /*------------------------------------------------------------------------------
             Purpose:  Get one or more records, based on a filter string                                                                     
             Notes:                                                                        
     ------------------------------------------------------------------------------*/
-    method public void ReadCustomers(
-            input filter as character, 
-            output DATASET dsCustomer):
-        
-        super:ReadData(filter).
-              
+    method private void GetSingleCustomer( input filter as FilterParams, output DATASET dsCustomer ):
+        empty temp-table ttCustomer no-error.       
+        find Customer 
+            where Customer.Custnum = integer(filter:id1).
+            create ttCustomer.
+            buffer-copy Customer to ttCustomer.
     end method.
     
+    method private void GetFilteredCustomers( input filter as FilterParams, output DATASET dsCustomer ):
+                
+        empty temp-table ttCustomer no-error.       
+        this-object:JFPFillMethod(filter).
+       
+    end method.
+    
+    method private void GetAllCustomers( output dataset dsCustomer ):
+    
+            super:ReadData().
+    
+    end method.
     {restapi/inc/filter_support.i &entity=customer}
+    
       
     /*------------------------------------------------------------------------------
             Purpose: Create one or more new records                                                               
             Notes:                                                                        
     ------------------------------------------------------------------------------*/
-    method public void CreateCustomers(input-output DATASET dsCustomer):            
+    method public void Createcustomers(input-output DATASET dsCustomer):            
                
         super:CreateData(DATASET dsCustomer by-reference).        
     end method.    
@@ -86,7 +113,7 @@ class restapi.Customers inherits BusinessEntity implements IBusinessEntity:
             Purpose:  Update one or more records                                                                  
             Notes:                                                                        
     ------------------------------------------------------------------------------*/
-    method public void UpdateCustomers(input-output DATASET dsCustomer):            
+    method public void Updatecustomers(input-output DATASET dsCustomer):            
     
         super:UpdateData(DATASET dsCustomer by-reference).          
     end method.
@@ -95,7 +122,7 @@ class restapi.Customers inherits BusinessEntity implements IBusinessEntity:
             Purpose:    Delete a record                                                               
             Notes:                                                                        
     ------------------------------------------------------------------------------*/
-    method public void DeleteCustomers(input-output DATASET dsCustomer):                    
+    method public void Deletecustomers(input-output DATASET dsCustomer):                    
     
         super:DeleteData(DATASET dsCustomer by-reference).
     end method.

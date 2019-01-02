@@ -157,6 +157,7 @@
         define variable ii          as integer no-undo.
         define variable cNotListed  as character no-undo.
         
+        lOk = true.
         
         create tt{&entity}.
         
@@ -172,6 +173,7 @@
                 cNotListed = left-trim(cNotListed + "," + entry(ii, fieldlist), ",").
                 
             end.
+            if cNotListed > "" then
             lOk = false.
         end.
         

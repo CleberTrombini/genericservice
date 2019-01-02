@@ -33,7 +33,7 @@ class GenericService inherits WebHandler:
         define variable oFieldlist  as character         no-undo.
         
         define variable filter      as FilterParams      no-undo.
-        define variable lOk         as logical           no-undo.   
+        define variable lOk         as logical           no-undo initial true.   
         
         define variable entity      as GenericEntity     no-undo.
         define variable dynClass    as IBusinessEntity   no-undo.
@@ -53,7 +53,7 @@ class GenericService inherits WebHandler:
         id2         = poRequest:GetPathParameter("id2").
         
         queryString = poRequest:GetContextValue("QUERY_STRING").
-        
+        message queryString.
         filter = new FilterParams().
         
         if id1 > "" then
@@ -99,63 +99,77 @@ class GenericService inherits WebHandler:
                 end.
             end.
         end.
-        lOk = true.
         entity = new GenericEntity("restapi." + entityName).
-        dynClass = dynamic-new string("restapi." + entityName) () no-error.                
-
-        if dynClass = ? then 
+        dynClass = dynamic-new string("restapi." + entityName) () no-error.
+        if entityName2 > "" then
+            dynClass2 = dynamic-new string("restapi." + entityName + entityName2) () no-error .                
+    
+        if dynClass = ? or ( entityName2 > "" and dynClass2 = ?) then 
         do:
             jsonObject = new JsonObject().
-            jsonObject:Add("Error", "Following entities do not exist for this api").
-            jsonObject:Add("Entity", entityName ).
+            jsonObject:Add("Error", "Following entities or combination of these entities do not exist for this api").
+            jsonObject:Add("Entity", left-trim(entityName + "," + entityName2, ",") ).
+            
             body = jsonObject:GetJsonText().
         end.
-        else 
+        else if filter:where > "" then
         do:
-            if entityName2 > "" then
+            if dynClass2 <> ? then 
             do:
-                entity = new GenericEntity("restapi." + entityName2).
-                dynClass2 = dynamic-new string("restapi." + entityName2) () no-error .
-                if dynClass2 = ? then
+                dynClass2:CheckFieldList(filter:FieldList, output oFieldList, output lOk).
+                if not lOk then 
                 do:
                     jsonObject = new JsonObject().
-                    jsonObject:Add("Error", "Following entity does not exist for this api").
-                    jsonObject:Add("Entity", entityName2 ).
+                    jsonObject:Add("Error", "Following field(s) in query do not exist for this entity").
+                    jsonObject:Add("Fields", oFieldList).
                     body = jsonObject:GetJsonText().
                 end.
-                else
-                do:
-                    if filter:where > "" then 
-                    do:
-                        dynClass2:CheckFieldList(filter:FieldList, output oFieldList, output lOk).
-                    end.
-                end.  
             end.
             else 
             do:
-                if filter:where > "" then 
+                dynClass:CheckFieldList(filter:FieldList, output oFieldList, output lOk).
+                if not lOk then
                 do:
-                    dynClass:CheckFieldList(filter:FieldList, output oFieldList, output lOk).
-                end.
+                    jsonObject = new JsonObject().
+                    jsonObject:Add("Error", "Following field(s) in query do not exist for this entity").
+                    jsonObject:Add("Fields", oFieldList).
+                    body = jsonObject:GetJsonText().
+                end.    
             end.
-            if lOk then 
-            do: 
-                dynClass:Read(filter, output DATASET-HANDLE hDataSet).
-                message hDataSet:num-buffers.
-                hTempTable = hDataSet:get-buffer-handle():table-handle.
-                jsonArray = new JsonArray().
-                jsonArray:READ(hTempTable).
-                body = jsonArray:GetJsonText().
-            end.
-            else do:
-                jsonObject = new JsonObject().
-                jsonObject:Add("Error", "Following field(s) in query do not exist for this entity").
-                jsonObject:Add("Fields", oFieldList).
-                body = jsonObject:GetJsonText().
-            end.
-                        
         end.
         
+        message lOk.
+        
+        if lOk and dynClass2 <> ? then
+        do:
+            define variable ii as integer no-undo.
+            dynClass2:Read(filter, output dataset-handle hDataSet).
+           
+            hTempTable = hDataSet:get-buffer-handle(1):table-handle.
+            jsonObject = new JsonObject().
+            jsonObject:Read(hTempTable).
+            
+            do ii=2 to hDataSet:num-buffers:
+                hTempTable = hDataSet:get-buffer-handle(ii):table-handle.
+                message hTempTAble:name.
+                jsonArray = new JsonArray().
+                jsonArray:READ(hTempTable).
+                jsonObject:Add(entityName2, jsonArray ).
+                                       
+            end.
+            body = jsonObject:GetJsonText(). 
+        end.
+        else if lOk then
+        do:
+            dynClass:Read(filter, output DATASET-HANDLE hDataSet).
+            hTempTable = hDataSet:get-buffer-handle(1):table-handle.
+            jsonObject = new JsonObject().
+            jsonObject:Read(hTempTable).
+            
+            body = jsonObject:GetJsonText().
+        end.
+                    
+       
         response = new WebResponse().        
         writer = new WebResponseWriter(response).
         
@@ -176,7 +190,9 @@ class GenericService inherits WebHandler:
     method override protected integer HandleNotImplemented( input poRequest as OpenEdge.Web.IWebRequest ):
         
         undo, throw new Progress.Lang.AppError("This method is not implemented").
-    end method.    
+    end method.
+    
+        
     
          
     

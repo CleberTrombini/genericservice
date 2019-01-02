@@ -18,7 +18,7 @@
   /** Dynamically generated schema file **/
    
 
-define temp-table ttCustomer before-table bttCustomer
+define temp-table ttCustomer serialize-name "customers" before-table bttCustomer
 field CustNum as integer initial "0" label "Cust Num"
 field Country as character initial "USA" label "Country"
 field Name as character label "Name"
