@@ -196,6 +196,8 @@
         end.
         
         lcModel = joModel:GetJsonText().
+        delete tt{&entity}.
+        delete object joModel.
         
     end method.    
             

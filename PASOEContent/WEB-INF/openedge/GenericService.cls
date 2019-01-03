@@ -48,8 +48,8 @@ class GenericService inherits WebHandler:
         define variable jsonObject  as JsonObject        no-undo.       
         define variable jsonArray   as JsonArray         no-undo.
         
-        response = new WebResponse().        
-        writer = new WebResponseWriter(response).
+        response    = new WebResponse().        
+        writer      = new WebResponseWriter(response).
         entityName  = poRequest:GetPathParameter("entityname").
         entityName2 = poRequest:GetPathParameter("entityname2").
         id1         = poRequest:GetPathParameter("id1").
@@ -192,7 +192,15 @@ class GenericService inherits WebHandler:
         response:ContentType = "application/json".
         writer:write(body).
         writer:flush().
-        writer:close().            
+        writer:close().          
+        delete object JsonArray.
+        delete object JsonObject.
+        delete object dynClass.
+        delete object dynClass2.
+        delete object hTempTable.
+        delete object filter.  
+        delete object response.
+        delete object writer.
     end method.
     
     method override protected integer HandleNotAllowedMethod( input poRequest as OpenEdge.Web.IWebRequest ):
