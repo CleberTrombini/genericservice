@@ -8,8 +8,8 @@ It supports paging ("limit" and "offset"), sorting ("sort_by") and basic
 filtering by using whatever field available for a certain object/business entity.
 
 It also supports viewing of meta data of a certain entity (field names and data types).
-This can be done by using /api/meta/<entity> as URI.
-If you just want to get data, you should use /api/data/<entity>
+This can be done by using /api/<b>meta</b>/ as URI.
+If you just want to get data, you should use /api/<b>data</b>/
 
 <b>It performs checks:</b>
 
