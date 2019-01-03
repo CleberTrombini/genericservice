@@ -8,20 +8,20 @@ It supports paging ("limit" and "offset"), sorting ("sort_by") and basic
 filtering by using whatever field available for a certain object/business entity.
 
 
-It also performs checks:
+<b>It performs checks:</b>
 
 - if fields used in the filter actually exist for a certain object.
 - if entities exist (either as a main entity or as combined entities i.e. 
   customers orders eq. customers/id/orders)
 
-Important files:
+<b>Important files:</b>
 
 - FilterParams.cls      (object that handles the filter)
 - GenericService.cls    (the actual webhandler)
 - IBusinessEntity.cls   (the interface)
 - filter_support.i      (generic methods: count/paging/field check)
 
-Note:
+<b>Note:</b>
 
 You will need to create a new OpenEdge Project of type 'Server', 'PAS for OpenEdge' and with transport 'WEB'. 
 
