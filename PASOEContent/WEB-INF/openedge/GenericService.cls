@@ -46,7 +46,8 @@ class GenericService inherits WebHandler:
         define variable jsonObject  as JsonObject        no-undo.       
         define variable jsonArray   as JsonArray         no-undo.
         
-        
+        response = new WebResponse().        
+        writer = new WebResponseWriter(response).
         entityName  = poRequest:GetPathParameter("entityname").
         entityName2 = poRequest:GetPathParameter("entityname2").
         id1         = poRequest:GetPathParameter("id1").
@@ -106,9 +107,11 @@ class GenericService inherits WebHandler:
     
         if dynClass = ? or ( entityName2 > "" and dynClass2 = ?) then 
         do:
+            lOk = false.
+            response:StatusCode = 400.
             jsonObject = new JsonObject().
             jsonObject:Add("Error", "Following entities or combination of these entities do not exist for this api").
-            jsonObject:Add("Entity", left-trim(entityName + "," + entityName2, ",") ).
+            jsonObject:Add("Entity", right-trim(left-trim(entityName + "," + entityName2, ","), ",")).
             
             body = jsonObject:GetJsonText().
         end.
@@ -119,6 +122,7 @@ class GenericService inherits WebHandler:
                 dynClass2:CheckFieldList(filter:FieldList, output oFieldList, output lOk).
                 if not lOk then 
                 do:
+                    response:StatusCode = 400.
                     jsonObject = new JsonObject().
                     jsonObject:Add("Error", "Following field(s) in query do not exist for this entity").
                     jsonObject:Add("Fields", oFieldList).
@@ -130,6 +134,7 @@ class GenericService inherits WebHandler:
                 dynClass:CheckFieldList(filter:FieldList, output oFieldList, output lOk).
                 if not lOk then
                 do:
+                    response:StatusCode = 400.
                     jsonObject = new JsonObject().
                     jsonObject:Add("Error", "Following field(s) in query do not exist for this entity").
                     jsonObject:Add("Fields", oFieldList).
@@ -142,6 +147,7 @@ class GenericService inherits WebHandler:
         
         if lOk and dynClass2 <> ? then
         do:
+            response:StatusCode = 200.
             define variable ii as integer no-undo.
             dynClass2:Read(filter, output dataset-handle hDataSet).
            
@@ -161,23 +167,16 @@ class GenericService inherits WebHandler:
         end.
         else if lOk then
         do:
+            response:StatusCode = 200.
             dynClass:Read(filter, output DATASET-HANDLE hDataSet).
             hTempTable = hDataSet:get-buffer-handle(1):table-handle.
             jsonObject = new JsonObject().
             jsonObject:Read(hTempTable).
-            
             body = jsonObject:GetJsonText().
         end.
-                    
-       
-        response = new WebResponse().        
-        writer = new WebResponseWriter(response).
-        
-        if response:StatusCode eq 200 then 
-        do:
-            response:ContentType = "application/json".
-            writer:write(body).
-        end.
+                
+        response:ContentType = "application/json".
+        writer:write(body).
         writer:flush().
         writer:close().            
     end method.
