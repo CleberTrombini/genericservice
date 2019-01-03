@@ -7,6 +7,9 @@ This example is based on the Sports2000 db (of course :)).
 It supports paging ("limit" and "offset"), sorting ("sort_by") and basic 
 filtering by using whatever field available for a certain object/business entity.
 
+It also supports viewing of meta data of a certain entity (field names and data types).
+This can be done by using /api/meta/<entity> as URI.
+If you just want to get data, you should use /api/data/<entity>
 
 <b>It performs checks:</b>
 
@@ -27,8 +30,8 @@ You will need to create a new OpenEdge Project of type 'Server', 'PAS for OpenEd
 
 Then you will need to create the Resource URI(s) (mappings) for the WebHandler accordingly:
 
-1. /api/{entityname}/{id1}/{entityname2}/{id2}
-2. /api/{entityname}/{id1}/{entityname2}
-3. /api/{entityname}/{id1}
-4. /api/{entityname}
+1. /api/{apitype}/{entityname}/{id1}/{entityname2}/{id2}
+2. /api/{apitype}/{entityname}/{id1}/{entityname2}
+3. /api/{apitype}/{entityname}/{id1}
+4. /api/{apitype}/{entityname}
 
