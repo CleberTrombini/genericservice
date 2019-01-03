@@ -163,10 +163,11 @@
         
         do ii = 1 to buffer tt{&entity}:num-fields:
             cFieldList = right-trim(buffer tt{&entity}:buffer-field(ii):name + "," + cFieldList, ",").
+            message buffer tt{&entity}:buffer-field(ii):data-type.
         end.
         
+        
         ii = 0.
-        message "fieldlist: " fieldlist " cFieldList: " cFieldList.
         
         do ii = 1 to num-entries(fieldlist, ","):
             if lookup(entry(ii,fieldlist),cFieldList) = 0 then do:
@@ -180,9 +181,24 @@
         oFieldList = cNotListed.
         delete tt{&entity}.
         
-    end method.   
+    end method.
     
+    method public void CreateEntityModel (output lcModel as longchar ):
+        define variable ii as integer no-undo.
+        define variable joModel as JsonObject no-undo.
+        
+        joModel = new JsonObject().
+        create tt{&entity}.       
     
+        do ii = 1 to buffer tt{&entity}:num-fields:
+            if (buffer tt{&entity}:buffer-field(ii):name <> "seq" and buffer tt{&entity}:buffer-field(ii):name <> "id") then
+            joModel:add(buffer tt{&entity}:buffer-field(ii):name, buffer tt{&entity}:buffer-field(ii):data-type).
+        end.
+        
+        lcModel = joModel:GetJsonText().
+        
+    end method.    
+            
     
     
     

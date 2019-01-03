@@ -18,7 +18,7 @@
   /** Dynamically generated schema file **/
    
 
-define temp-table ttItem before-table bttItem 
+define temp-table ttItem serialize-name "items" before-table bttItem 
 field Itemnum as integer initial "0" label "Item Num"
 field ItemName as character label "Item Name"
 field Price as decimal initial "0" label "Price"

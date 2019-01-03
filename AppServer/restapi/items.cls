@@ -10,6 +10,7 @@
 
 using Progress.Lang.*.
 using OpenEdge.BusinessLogic.BusinessEntity.
+using Progress.Json.ObjectModel.*.
 
 block-level on error undo, throw.
 

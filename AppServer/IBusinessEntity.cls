@@ -16,5 +16,5 @@ interface IBusinessEntity:
    
     method public void Read(filter as FilterParams, output dataset-handle hDataSet). 
     method public void CheckFieldList(fieldlist as character, output oFieldList as character, output lOk as logical). 
-
+    method public void CreateEntityModel (output lcModel as longchar).
 end interface.
