@@ -26,8 +26,8 @@ Note:
 You will need to create a new OpenEdge Project of type 'Server', 'PAS for OpenEdge' and with transport 'WEB'.
 Then you will need to create the Resource URI(s) (mappings) for the WebHandler accordingly:
 
-/api/{entityname}/{id1}/{entityname2}/{id2}
-/api/{entityname}/{id1}/{entityname2}
-/api/{entityname}/{id1}
-/api/{entityname}
+1. /api/{entityname}/{id1}/{entityname2}/{id2}
+2. /api/{entityname}/{id1}/{entityname2}
+3. /api/{entityname}/{id1}
+4. /api/{entityname}
 
