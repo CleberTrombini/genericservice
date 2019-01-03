@@ -20,3 +20,14 @@ Important files:
 - GenericService.cls    (the actual webhandler)
 - IBusinessEntity.cls   (the interface)
 - filter_support.i      (generic methods: count/paging/field check)
+
+Note:
+
+You will need to create a new OpenEdge Project of type 'Server', 'PAS for OpenEdge' and with transport 'WEB'.
+Then you will need to create the Resource URI(s) (mappings) for the WebHandler accordingly:
+
+/api/{entityname}/{id1}/{entityname2}/{id2}
+/api/{entityname}/{id1}/{entityname2}
+/api/{entityname}/{id1}
+/api/{entityname}
+
