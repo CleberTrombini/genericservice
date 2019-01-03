@@ -192,15 +192,18 @@ class GenericService inherits WebHandler:
         response:ContentType = "application/json".
         writer:write(body).
         writer:flush().
-        writer:close().          
-        delete object JsonArray.
-        delete object JsonObject.
-        delete object dynClass.
-        delete object dynClass2.
-        delete object hTempTable.
-        delete object filter.  
-        delete object response.
-        delete object writer.
+        writer:close().        
+        finally:  
+            delete object JsonArray     no-error.
+            delete object JsonObject    no-error.
+            delete object dynClass      no-error.
+            delete object dynClass2     no-error.
+            delete object hDataSet      no-error.
+            delete object hTempTable    no-error.
+            delete object filter        no-error.  
+            delete object response      no-error.
+            delete object writer        no-error.
+        end.
     end method.
     
     method override protected integer HandleNotAllowedMethod( input poRequest as OpenEdge.Web.IWebRequest ):
