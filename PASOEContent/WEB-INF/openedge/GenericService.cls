@@ -14,6 +14,7 @@ using Progress.Lang.*.
 using OpenEdge.Net.*.
 using OpenEdge.Net.HTTP.*.
 using OpenEdge.Web.*.
+using interfaces.CRUD.*.
 
 
 block-level on error undo, throw.
@@ -38,8 +39,8 @@ class GenericService inherits WebHandler:
         define variable lOk         as logical           no-undo initial true.   
         
         define variable entity      as GenericEntity     no-undo.
-        define variable dynClass    as IBusinessEntity   no-undo.
-        define variable dynClass2   as IBusinessEntity   no-undo.
+        define variable dynClass    as interfaces.CRUD   no-undo.
+        define variable dynClass2   as interfaces.CRUD   no-undo.
         
         define variable hDataSet    as handle            no-undo.
         define variable hTempTable  as handle            no-undo.
@@ -106,11 +107,13 @@ class GenericService inherits WebHandler:
                     end.
                 end.
             end.
-            entity = new GenericEntity("restapi." + entityName).
-            dynClass = dynamic-new string("restapi." + entityName) () no-error.
+            entityName = "entities." + entityName.
+            message entityName.
+            entity = new GenericEntity(entityName).
+            dynClass = dynamic-new string(entityName) () .
             if entityName2 > "" then
-                dynClass2 = dynamic-new string("restapi." + entityName + entityName2) () no-error .                
-        
+                dynClass2 = dynamic-new string("entities." + entityName + entityName2) () no-error .                
+            message dynClass.
             if dynClass = ? or ( entityName2 > "" and dynClass2 = ?) then 
             do:
                 lOk = false.
@@ -184,7 +187,7 @@ class GenericService inherits WebHandler:
         else if apiType = "meta" then
         do:
             
-            dynClass = dynamic-new string("restapi." + entityName) () no-error.
+            dynClass = dynamic-new string("entities." + entityName) () no-error.
             dynClass:CreateEntityModel(output lcModel).
             body = lcModel.
         end.    
@@ -204,6 +207,133 @@ class GenericService inherits WebHandler:
             delete object response      no-error.
             delete object writer        no-error.
         end.
+    end method.
+    
+    method override protected integer HandlePost(input poRequest as OpenEdge.Web.IWebRequest):
+    
+        define variable response    as WebResponse       no-undo.
+        define variable writer      as WebResponseWriter no-undo.
+        define variable body        as jsonObject        no-undo.
+        
+        define variable entityName  as character         no-undo.
+        define variable entityName2 as character         no-undo.
+        define variable id1         as character         no-undo.
+        define variable id2         as character         no-undo.
+        define variable queryString as character         no-undo.        
+        define variable oFieldlist  as character         no-undo.
+        define variable lcModel     as longchar          no-undo.   
+        define variable apiType     as character         no-undo.   
+        define variable responseBody as longchar         no-undo.
+        
+        define variable filter      as FilterParams      no-undo.
+        define variable lOk         as logical           no-undo initial true.   
+        
+        define variable entity      as GenericEntity     no-undo.
+        define variable dynClass    as interfaces.CRUD   no-undo.
+        define variable dynClass2   as interfaces.CRUD   no-undo.
+        
+        define variable hDataSet    as handle            no-undo.
+        define variable hTempTable  as handle            no-undo.
+        define variable hCP         as handle            no-undo.
+       
+        define variable jsonObject  as JsonObject        no-undo.       
+        define variable jsonArray   as JsonArray         no-undo.
+        
+        response    = new WebResponse().        
+        writer      = new WebResponseWriter(response).
+        entityName  = poRequest:GetPathParameter("entityname").
+        apiType     = poRequest:GetPathParameter("apitype").
+        
+        body        = cast(poRequest:Entity, JsonObject).
+        
+        dynClass = dynamic-new string("entities." + entityName) () no-error.
+        
+        if dynClass = ? then
+        do:
+                response:StatusCode = 400.
+                jsonObject = new JsonObject().
+                jsonObject:Add("Error", "Following entities or combination of these entities do not exist for this api").
+                jsonObject:Add("Entity", right-trim(left-trim(entityName + "," + entityName2, ","), ",")).
+                
+                responseBody = jsonObject:GetJsonText().
+        end.
+        else do:
+            dynClass:Create(body, output dataset-handle hDataSet).
+            hDataSet:write-json('longchar', responseBody ).
+        end.
+        
+        response:ContentType = "application/json".
+        writer:write(responseBody).
+        writer:flush().
+        writer:close().
+        
+    end method.
+    
+    
+    method override protected integer HandlePut(input poRequest as OpenEdge.Web.IWebRequest):
+    
+        define variable response    as WebResponse       no-undo.
+        define variable writer      as WebResponseWriter no-undo.
+        define variable body        as jsonObject        no-undo.
+        
+        define variable entityName  as character         no-undo.
+        define variable entityName2 as character         no-undo.
+        define variable id1         as character         no-undo.
+        define variable id2         as character         no-undo.
+        define variable queryString as character         no-undo.        
+        define variable oFieldlist  as character         no-undo.
+        define variable lcModel     as longchar          no-undo.   
+        define variable apiType     as character         no-undo.   
+        define variable responseBody as longchar         no-undo.
+        
+        define variable filter      as FilterParams      no-undo.
+        define variable lOk         as logical           no-undo initial true.   
+        
+        define variable entity      as GenericEntity     no-undo.
+        define variable dynClass    as interfaces.CRUD   no-undo.
+        define variable dynClass2   as interfaces.CRUD   no-undo.
+        
+        define variable hDataSet    as handle            no-undo.
+        define variable hTempTable  as handle            no-undo.
+        define variable hCP         as handle            no-undo.
+       
+        define variable jsonObject  as JsonObject        no-undo.       
+        define variable jsonArray   as JsonArray         no-undo.
+        
+        response    = new WebResponse().        
+        writer      = new WebResponseWriter(response).
+        entityName  = poRequest:GetPathParameter("entityname").
+        apiType     = poRequest:GetPathParameter("apitype").
+        id1         = poRequest:GetPathParameter("id1").
+        
+        body        = cast(poRequest:Entity, JsonObject).
+        
+        filter = new FilterParams().
+        filter:entityName = entityName.
+        filter:id1 = id1.
+        
+
+        dynClass = dynamic-new string("entities." + entityName) () no-error.
+        
+        if dynClass = ? then
+        do:
+                response:StatusCode = 400.
+                jsonObject = new JsonObject().
+                jsonObject:Add("Error", "Following entities or combination of these entities do not exist for this api").
+                jsonObject:Add("Entity", right-trim(left-trim(entityName + "," + entityName2, ","), ",")).
+                
+                responseBody = jsonObject:GetJsonText().
+        end.
+        else do:
+            dynClass:Update(filter, body, output dataset-handle hDataSet).
+            hDataSet:write-json('longchar', responseBody ).
+        end.
+        
+        response:ContentType = "application/json".
+        writer:write(responseBody).
+        writer:flush().
+        writer:close().
+        
     end method.
     
     method override protected integer HandleNotAllowedMethod( input poRequest as OpenEdge.Web.IWebRequest ):

@@ -11,16 +11,17 @@
 using Progress.Lang.*.
 using OpenEdge.BusinessLogic.BusinessEntity.
 using FilterParams.*.
+using Progress.Json.ObjectModel.*.
 
 block-level on error undo, throw.
 
-class restapi.customersorders inherits BusinessEntity implements IBusinessEntity:
+class entities.customersorders inherits BusinessEntity implements interfaces.CRUD:
     /*------------------------------------------------------------------------------
             Purpose:                                                                      
             Notes:                                                                        
     ------------------------------------------------------------------------------*/
     
-    {"restapi\inc\custorders.i"}
+    {"entities\inc\custorders.i"}
     
     /* TODO Fill in appropriate datasource tables */ 
     define query qOrder for order.
@@ -93,7 +94,9 @@ class restapi.customersorders inherits BusinessEntity implements IBusinessEntity
               
     end method.
     
- method public void CheckFieldList (input fieldlist as character, output oFieldList as character, output lOk as logical):
+    {entities/inc/metadata.i &entity=customer}
+    
+ /* method public void CheckFieldList (input fieldlist as character, output oFieldList as character, output lOk as logical):
         define variable cFieldList  as character no-undo.
         define variable ii          as integer no-undo.
         define variable cNotListed  as character no-undo.
@@ -122,6 +125,6 @@ class restapi.customersorders inherits BusinessEntity implements IBusinessEntity
         delete ttOrder.
         
     end method.          
-
+*/
     
 end class.
