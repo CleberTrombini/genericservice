@@ -73,9 +73,6 @@ class entities.customers inherits BusinessEntity implements interfaces.CRUD:
         
         daO = new data.DataAccess().
         daO:attachSource("ttcustomer", "custnum", "Customer", "custnum", filter:id1, filter, input-output dataset dsCustomer by-reference).
-        
-        daO:fetchAll(dataset dsCustomer by-reference).
-            
         daO:dettachSource(dataset dsCustomer by-reference).    
             
     end method.

@@ -96,35 +96,4 @@ class entities.customersorders inherits BusinessEntity implements interfaces.CRU
     
     {entities/inc/metadata.i &entity=customer}
     
- /* method public void CheckFieldList (input fieldlist as character, output oFieldList as character, output lOk as logical):
-        define variable cFieldList  as character no-undo.
-        define variable ii          as integer no-undo.
-        define variable cNotListed  as character no-undo.
-        
-        lOk = true.
-        create ttOrder.
-        
-        do ii = 1 to buffer ttOrder:num-fields:
-            cFieldList = right-trim(buffer ttOrder:buffer-field(ii):name + "," + cFieldList, ",").
-        end.
-        
-        ii = 0.
-        
-        do ii = 1 to num-entries(fieldlist, ","):
-            if lookup(entry(ii,fieldlist),cFieldList) = 0 then do:
-                cNotListed = left-trim(cNotListed + "," + entry(ii, fieldlist), ",").
-                message cNotListed.
-            end.
-            if cNotListed > "" then
-                lOk = false.
-            
-        end.
-        
-        
-        oFieldList = cNotListed.
-        delete ttOrder.
-        
-    end method.          
-*/
-    
 end class.

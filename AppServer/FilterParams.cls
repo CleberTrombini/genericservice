@@ -19,6 +19,7 @@ class FilterParams:
     define public property FieldList    as character    no-undo get. set.
     define public property id1          as character    no-undo get. set.
     define public property id2          as character    no-undo get. set.
+    define public property rowid        as character    no-undo get. set.
     define public property filtered     as logical      initial false no-undo get. set.
 
     method override public character ToString():

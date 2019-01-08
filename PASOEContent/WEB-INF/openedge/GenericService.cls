@@ -94,6 +94,8 @@ class GenericService inherits WebHandler:
                                 filter:TopRecs = integer(entry(2,cParam,"=")).
                             when "offset" then
                                 filter:SkipRecs = integer(entry(2,cParam,"=")).
+                            when "id" then
+                                filter:rowid = entry(2,cParam,"=").
                             otherwise do:
                                 filter:FieldList = left-trim(filter:FieldList + "," + cName, ",").
                             
