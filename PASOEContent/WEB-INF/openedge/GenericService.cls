@@ -62,60 +62,15 @@ class GenericService inherits WebHandler:
         if apiType = "data" then
         do:
         
-            filter = new FilterParams().
+            filter = new FilterParams(entityName, entityName2, querystring, id1, id2).
             
-            if id1 > "" then
-                filter:id1 = id1.
-            if id2 > "" then
-                filter:id2 = id2.
-            if entityName2 > "" then
-                filter:entityName2 = entityname2.  
-            if queryString > "" then 
-            do:
-                filter:filtered = true.
-                define variable cParam as character no-undo.
-                define variable i      as integer   no-undo.
-                define variable cName  as character no-undo.
-                define variable cWhere as character no-undo.
-                define variable cValue as character no-undo.
-                define variable idx    as integer   no-undo.
-                
-                do i = 1 to num-entries(queryString, "&"):
-                    cParam = entry(i, queryString, "&").
-                    idx = index(cParam, "=").
-                    if idx > 0 then 
-                    do:
-                        cName = substring(cParam, 1, idx - 1).
-                        cValue = OpenEdge.Net.URI:Decode(substring(cParam, idx + 1)).
-                        case cName:
-                            when "sort_by" then 
-                                filter:SortBy = entry(2,cParam,"=").
-                            when "limit" then
-                                filter:TopRecs = integer(entry(2,cParam,"=")).
-                            when "offset" then
-                                filter:SkipRecs = integer(entry(2,cParam,"=")).
-                            when "id" then
-                                filter:rowid = entry(2,cParam,"=").
-                            otherwise do:
-                                filter:FieldList = left-trim(filter:FieldList + "," + cName, ",").
-                            
-                            if cWhere > "" then 
-                                cWhere = cWhere + " AND " + cName + "=" + QUOTER(OpenEdge.Net.URI:Decode(cValue)).
-                            else 
-                                cWhere = cName + "=" + QUOTER(OpenEdge.Net.URI:Decode(cValue)).
-                            end.    
-                        end case.        
-                        filter:where = cWhere.
-                    end.
-                end.
-            end.
             entityName = "entities." + entityName.
-            message entityName.
             entity = new GenericEntity(entityName).
             dynClass = dynamic-new string(entityName) () .
+            
             if entityName2 > "" then
                 dynClass2 = dynamic-new string("entities." + entityName + entityName2) () no-error .                
-            message dynClass.
+            
             if dynClass = ? or ( entityName2 > "" and dynClass2 = ?) then 
             do:
                 lOk = false.
@@ -123,7 +78,6 @@ class GenericService inherits WebHandler:
                 jsonObject = new JsonObject().
                 jsonObject:Add("Error", "Following entities or combination of these entities do not exist for this api").
                 jsonObject:Add("Entity", right-trim(left-trim(entityName + "," + entityName2, ","), ",")).
-                
                 body = jsonObject:GetJsonText().
             end.
             else if filter:where > "" then
@@ -153,8 +107,6 @@ class GenericService inherits WebHandler:
                     end.    
                 end.
             end.
-            
-            message lOk.
             
             if lOk and dynClass2 <> ? then
             do:
@@ -310,11 +262,8 @@ class GenericService inherits WebHandler:
         
         body        = cast(poRequest:Entity, JsonObject).
         
-        filter = new FilterParams().
-        filter:entityName = entityName.
-        filter:id1 = id1.
+        filter = new FilterParams(entityName, "", "", id1, "").
         
-
         dynClass = dynamic-new string("entities." + entityName) () no-error.
         
         if dynClass = ? then

@@ -22,23 +22,75 @@ class FilterParams:
     define public property rowid        as character    no-undo get. set.
     define public property filtered     as logical      initial false no-undo get. set.
 
-    method override public character ToString():
-        return substitute('where &1 by &2 field-list &3 [top:&4 skip:&5]',
-                    this-object:Where, SortBy, FieldList, TopRecs, SkipRecs).
-    end method.    
+
+    /*------------------------------------------------------------------------------
+     Purpose:
+     Notes:
+    ------------------------------------------------------------------------------*/
+        
+    constructor public FilterParams (   input pcentity as character,
+                                        input pcentity2 as character,
+                                        input pcquerystring as character,
+                                        input pcid1 as character,
+                                        input pcid2 as character
+                                           ):
+        
+        super ().
+        
+            if pcid1 > "" then
+                this-object:id1 = pcid1.
+            if pcid2 > "" then
+                this-object:id2 = pcid2.
+            if pcentity > "" then
+                this-object:entityName2 = pcentity.  
+            if pcentity2 > "" then
+                this-object:entityName2 = pcentity2.  
+            if pcqueryString > "" then 
+            do:
+                this-object:filtered = true.
+                this-object:BuildQueryString(pcquerystring).
+                
+            end.
     
-    method static public character BuildQueryString(input pFilter as FilterParams, input dataset-handle pDataset):
-        define variable queryString as character no-undo.
-        define variable buffer as handle no-undo.
+    end constructor.
+
+    method public void BuildQueryString(input pcquerystring as character):
+        define variable cParam as character no-undo.
+        define variable i      as integer   no-undo.
+        define variable cName  as character no-undo.
+        define variable cWhere as character no-undo.
+        define variable cValue as character no-undo.
+        define variable idx    as integer   no-undo.
         
-        //find table by name from TableName
-        //find table by serialize-name from TableName
+        do i = 1 to num-entries(pcqueryString, "&"):
+            cParam = entry(i, pcqueryString, "&").
+            idx = index(cParam, "=").
+            if idx > 0 then 
+            do:
+                cName = substring(cParam, 1, idx - 1).
+                cValue = OpenEdge.Net.URI:Decode(substring(cParam, idx + 1)).
+                case cName:
+                    when "sort_by" then 
+                        this-object:SortBy = entry(2,cParam,"=").
+                    when "limit" then
+                        this-object:TopRecs = integer(entry(2,cParam,"=")).
+                    when "offset" then
+                        this-object:SkipRecs = integer(entry(2,cParam,"=")).
+                    when "id" then
+                        this-object:rowid = entry(2,cParam,"=").
+                    otherwise do:
+                        this-object:FieldList = left-trim(this-object:FieldList + "," + cName, ",").
+                    
+                    if cWhere > "" then 
+                        cWhere = cWhere + " AND " + cName + "=" + QUOTER(OpenEdge.Net.URI:Decode(cValue)).
+                    else 
+                        cWhere = cName + "=" + QUOTER(OpenEdge.Net.URI:Decode(cValue)).
+                    end.    
+                end case.        
+                this-object:where = cWhere.
+            end.
+        end.
         
-        // for fields in WHERE
-            //find by name 
-            //find by serialize-name
-        
-        return queryString.
     end method.
     
     

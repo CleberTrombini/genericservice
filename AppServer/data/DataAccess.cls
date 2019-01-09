@@ -154,7 +154,7 @@ class data.DataAccess:
                             phDataSet:get-buffer-handle(1):buffer-field("seq"):buffer-value() = string(iSeq).
                         
                         end.
-                                   
+                                    
                         iCount = iCount + 1.
                     end.
                     phDataSet:write-json('file', '/usr/wrk/emeapas/work/phDataSet.json').
