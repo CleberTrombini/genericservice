@@ -46,3 +46,17 @@ Then you will need to create the Resource URI(s) (mappings) for the WebHandler a
 3. /api/{apitype}/{entityname}/{id1}
 4. /api/{apitype}/{entityname}
 
+<h2>Usage</h2>
+
+<H3>GET</h3>
+
+<b>MetaData</b>
+
+http(s)://<servername>:<portnumber>/<webappname>/api/meta/<entityname>
+
+<b>Data</b>
+
+<li>All customers: <br> http(s)://<servername>:<portnumber>/<webappname>/api/data/customers</li>
+<li>One customer: <br> http(s)://<servername>:<portnumber>/<webappname>/api/data/customers/1</li>
+
+
