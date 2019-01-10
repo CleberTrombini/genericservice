@@ -11,13 +11,13 @@ It also supports viewing of meta data of a certain entity (field names and data 
 This can be done by using /api/<b>meta</b>/ as URI.
 If you just want to get data, you should use /api/<b>data</b>/
 
-<h2><b>It performs checks:</b></h2>
+<h2>It performs checks:</h2>
 
 - if fields used in the filter actually exist for a certain object.
 - if entities exist (either as a main entity or as combined entities i.e. 
   customers orders eq. customers/id/orders)
 
-<h2><b>Important files:</b></h2>
+<h2>Important files:</h2>
 
 <b>WebHandler</b>
 - GenericService.cls    (the actual webhandler)
