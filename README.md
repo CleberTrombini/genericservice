@@ -29,6 +29,9 @@ If you just want to get data, you should use /api/<b>data</b>/
 - CRUD.cls (Full CRUD support)
 - RO.cls (ReadOnly)  
 
+<b>Includes</b>
+- metadata.i (used for field checks and creating a object representation)
+
 <b>Data Access</b>
 - DataAccess.cls      (generic methods: count/paging/field check)
 
