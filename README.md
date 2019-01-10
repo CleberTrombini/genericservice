@@ -41,10 +41,10 @@ You will need to create a new OpenEdge Project of type 'Server', 'PAS for OpenEd
 
 Then you will need to create the Resource URI(s) (mappings) for the WebHandler accordingly:
 
-1. /api/{apitype}/{entityname}/{id1}/{entityname2}/{id2}
-2. /api/{apitype}/{entityname}/{id1}/{entityname2}
-3. /api/{apitype}/{entityname}/{id1}
-4. /api/{apitype}/{entityname}
+    1. /api/{apitype}/{entityname}/{id1}/{entityname2}/{id2}
+    2. /api/{apitype}/{entityname}/{id1}/{entityname2}
+    3. /api/{apitype}/{entityname}/{id1}
+    4. /api/{apitype}/{entityname}
 
 <h2>Usage</h2>
 
@@ -56,10 +56,10 @@ http(s)://<servername>:<portnumber>/<webappname>/api/meta/<entityname>
 
 <b>Data</b>
 
-    <b>All customers:</b> 
+    All customers: 
     http(s)://<servername>:<portnumber>/<webappname>/api/data/customers
 
-    <b>One customer:</b>
+    One customer:
     http(s)://<servername>:<portnumber>/<webappname>/api/data/customers/1
 
 
