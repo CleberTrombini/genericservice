@@ -13,13 +13,13 @@ using OpenEdge.BusinessLogic.BusinessEntity.
 
 block-level on error undo, throw.
 
-class restapi.orders inherits BusinessEntity:
+class entities.orders inherits BusinessEntity:
     /*------------------------------------------------------------------------------
             Purpose:                                                                      
             Notes:                                                                        
     ------------------------------------------------------------------------------*/
     
-    {"restapi\inc\orders.i"}
+    {"entities\inc\orders.i"}
     
     define data-source srcOrder for sports2000.Order.
     

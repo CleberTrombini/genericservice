@@ -175,11 +175,13 @@ class data.DataAccess:
                 hDataSource:query = hQuery.
                 hQuery:query-open.
                 hQuery:get-next () no-error.
-                phDataSet:get-buffer-handle(1):buffer-create.
-                phDataSet:get-buffer-handle(1):buffer-copy (hBuffer).
-                phDataSet:get-buffer-handle(1):buffer-field("id"):buffer-value() = string(hBuffer:rowid).
-                iSeq = iSeq + 1.
-                phDataSet:get-buffer-handle(1):buffer-field("seq"):buffer-value() = string(iSeq).
+                if hBuffer:available then do:
+                    phDataSet:get-buffer-handle(1):buffer-create.
+                    phDataSet:get-buffer-handle(1):buffer-copy (hBuffer).
+                    phDataSet:get-buffer-handle(1):buffer-field("id"):buffer-value() = string(hBuffer:rowid).
+                    iSeq = iSeq + 1.
+                    phDataSet:get-buffer-handle(1):buffer-field("seq"):buffer-value() = string(iSeq).
+                end.
             end. 
             
         end. /* DO iEntry = 1 TO NUM-ENTRIES */

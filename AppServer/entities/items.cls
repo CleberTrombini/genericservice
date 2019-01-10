@@ -14,13 +14,13 @@ using Progress.Json.ObjectModel.*.
 
 block-level on error undo, throw.
 
-class restapi.items inherits BusinessEntity implements IBusinessEntity:
+class entities.items inherits BusinessEntity:
     /*------------------------------------------------------------------------------
             Purpose:                                                                      
             Notes:                                                                        
     ------------------------------------------------------------------------------*/
     
-    {"restapi\inc\items.i"}
+    {"entities\inc\items.i"}
      
     define data-source srcItem for sports2000.Item.
     define variable iSeq as integer no-undo.
@@ -85,8 +85,7 @@ class restapi.items inherits BusinessEntity implements IBusinessEntity:
     method private void GetFiltereditems( input filter as FilterParams, output DATASET dsItem ):
                 
         empty temp-table ttItem no-error.       
-        this-object:JFPFillMethod(filter).
-       
+        
     end method.
     
     method private void GetAllitems( output dataset dsItem ):
@@ -94,7 +93,7 @@ class restapi.items inherits BusinessEntity implements IBusinessEntity:
             super:ReadData().
     
     end method.
-    {restapi\inc\filter_support.i &entity=Item}
+    {entities\inc\metadata.i &entity=Item}
       
     /*------------------------------------------------------------------------------
             Purpose: Create one or more new records                                                               

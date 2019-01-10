@@ -40,7 +40,7 @@ class GenericService inherits WebHandler:
         
         define variable entity      as GenericEntity     no-undo.
         define variable dynClass    as interfaces.CRUD   no-undo.
-        define variable dynClass2   as interfaces.CRUD   no-undo.
+        define variable dynClass2   as interfaces.RO     no-undo.
         
         define variable hDataSet    as handle            no-undo.
         define variable hTempTable  as handle            no-undo.
@@ -66,10 +66,10 @@ class GenericService inherits WebHandler:
             
             entityName = "entities." + entityName.
             entity = new GenericEntity(entityName).
-            dynClass = dynamic-new string(entityName) () .
+            dynClass = dynamic-new string(entityName) () no-error.
             
             if entityName2 > "" then
-                dynClass2 = dynamic-new string("entities." + entityName + entityName2) () no-error .                
+                dynClass2 = dynamic-new string(entityName + entityName2) () no-error.                
             
             if dynClass = ? or ( entityName2 > "" and dynClass2 = ?) then 
             do:
@@ -120,7 +120,7 @@ class GenericService inherits WebHandler:
                 
                 do ii=2 to hDataSet:num-buffers:
                     hTempTable = hDataSet:get-buffer-handle(ii):table-handle.
-                    message hTempTAble:name.
+                //  message hTempTAble:name.
                     jsonArray = new JsonArray().
                     jsonArray:READ(hTempTable).
                     jsonObject:Add(entityName2, jsonArray ).

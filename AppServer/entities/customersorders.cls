@@ -15,7 +15,7 @@ using Progress.Json.ObjectModel.*.
 
 block-level on error undo, throw.
 
-class entities.customersorders inherits BusinessEntity implements interfaces.CRUD:
+class entities.customersorders inherits BusinessEntity implements interfaces.RO:
     /*------------------------------------------------------------------------------
             Purpose:                                                                      
             Notes:                                                                        
