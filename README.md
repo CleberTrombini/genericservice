@@ -1,4 +1,4 @@
-# GenericService
+# <h1>GenericService</h1>
 
 An implementation of a generic WebHandler that implements a more 'normal' REST
 api than the JSDO implementation.
@@ -11,18 +11,26 @@ It also supports viewing of meta data of a certain entity (field names and data 
 This can be done by using /api/<b>meta</b>/ as URI.
 If you just want to get data, you should use /api/<b>data</b>/
 
-<b>It performs checks:</b>
+<h2><b>It performs checks:</b></h2>
 
 - if fields used in the filter actually exist for a certain object.
 - if entities exist (either as a main entity or as combined entities i.e. 
   customers orders eq. customers/id/orders)
 
-<b>Important files:</b>
+<h2><b>Important files:</b></h2>
 
-- FilterParams.cls      (object that handles the filter)
+<b>WebHandler</b>
 - GenericService.cls    (the actual webhandler)
-- IBusinessEntity.cls   (the interface)
-- filter_support.i      (generic methods: count/paging/field check)
+
+<b>Filters/Query</b>
+- FilterParams.cls      (object that handles the filter)
+
+<b>Interfaces</b>
+- CRUD.cls (Full CRUD support)
+- RO.cls (ReadOnly)  
+
+<b>Data Access</b>
+- DataAccess.cls      (generic methods: count/paging/field check)
 
 <b>Note:</b>
 
