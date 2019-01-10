@@ -56,10 +56,10 @@ http(s)://<servername>:<portnumber>/<webappname>/api/meta/<entityname>
 
 <b>Data</b>
 
-    All customers: 
+    <b>All customers:</b> 
     http(s)://<servername>:<portnumber>/<webappname>/api/data/customers
 
-    One customer: 
+    <b>One customer:</b>
     http(s)://<servername>:<portnumber>/<webappname>/api/data/customers/1
 
 
