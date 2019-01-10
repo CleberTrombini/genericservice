@@ -52,7 +52,7 @@ Then you will need to create the Resource URI(s) (mappings) for the WebHandler a
 
 <b>MetaData</b>
 
-http(s)://<servername>:<portnumber>/<webappname>/api/meta/<entityname>
+    http(s)://<servername>:<portnumber>/<webappname>/api/meta/<entityname>
 
 <b>Data</b>
 
@@ -61,5 +61,9 @@ http(s)://<servername>:<portnumber>/<webappname>/api/meta/<entityname>
 
     One customer:
     http(s)://<servername>:<portnumber>/<webappname>/api/data/customers/1
+    
+    Filtered customer:
+    http(s)://<servername>:<portnumber>/<webappname>/api/data/customers?SalesRep=BBB&city=Oslo
+    
 
 
