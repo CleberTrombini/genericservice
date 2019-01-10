@@ -65,5 +65,6 @@ Then you will need to create the Resource URI(s) (mappings) for the WebHandler a
     Filtered customer:
     http(s)://<servername>:<portnumber>/<webappname>/api/data/customers?SalesRep=BBB&city=Oslo
     
-
+    Paged results:
+    http(s)://<servername>:<portnumber>/<webappname>/api/data/customers?limit=10&offset=5
 
