@@ -8,6 +8,7 @@ It supports paging ("limit" and "offset"), sorting ("sort_by") and basic
 filtering by using whatever field available for a certain object/business entity.
 
 It also supports viewing of meta data of a certain entity (field names and data types).
+With that information you can see what you should offer as input whenever you are updating or creating records via the api.
 This can be done by using /api/<b>meta</b>/ as URI.
 If you just want to get data, you should use /api/<b>data</b>/
 
@@ -56,15 +57,29 @@ Then you will need to create the Resource URI(s) (mappings) for the WebHandler a
 
 <b>Data</b>
 
-    All customers: 
+    Get all customers: 
     http(s)://<servername>:<portnumber>/<webappname>/api/data/customers
 
-    One customer:
+    Get one customer:
     http(s)://<servername>:<portnumber>/<webappname>/api/data/customers/1
     
-    Filtered customer:
+    Get filtered customer(s):
     http(s)://<servername>:<portnumber>/<webappname>/api/data/customers?SalesRep=BBB&city=Oslo
     
-    Paged results:
+    Use paging:
     http(s)://<servername>:<portnumber>/<webappname>/api/data/customers?limit=10&offset=5
+    
+<H3>PUT</h3>
 
+<b>Data</b>
+
+    Update one customer:
+    http(s)://<servername>:<portnumber>/<webappname>/api/data/customers/1
+    
+
+<H3>POST</h3>
+
+<b>Data</b>
+
+    Create one customer:
+    http(s)://<servername>:<portnumber>/<webappname>/api/data/customers
