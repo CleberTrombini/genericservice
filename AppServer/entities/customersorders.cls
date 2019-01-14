@@ -24,6 +24,9 @@ class entities.customersorders inherits BusinessEntity implements interfaces.RO:
     {"entities\inc\custorders.i"}
     
     /* TODO Fill in appropriate datasource tables */ 
+    define public property ttName as character no-undo initial "ttcustomer,ttorder" get. set. 
+    define public property piName as character no-undo initial "custnum" get. set.
+    define public property dbName as character no-undo initial "customer" get. set.
     define query qOrder for order.
     define data-source srcttCustomer for customer. 
     define data-source srcttOrder for query qOrder order keys (OrderNum).
@@ -34,28 +37,7 @@ class entities.customersorders inherits BusinessEntity implements interfaces.RO:
     ------------------------------------------------------------------------------*/
     constructor public customersorders():
         
-        define variable hDataSourceArray as handle no-undo extent 2.
-        define variable cSkipListArray as character no-undo extent 2.
-        
         super (dataset dsCustOrder:HANDLE).
-        
-        /* Data Source for each table in dataset. Should be in table order as defined 
-            in DataSet */ 
-         hDataSourceArray[1] = data-source srcttCustomer:HANDLE.
-         hDataSourceArray[2] = data-source srcttOrder:HANDLE.
-                  
-         /* Skip-list entry for each table in dataset. Should be in temp-table order 
-           as defined in DataSet */
-        /* Each skip-list entry is a comma-separated list of field names, to be
-            ignored in create stmt */
-         
-         /* TODO Update cSkipListArray if required by your BusinessEntity */
-         cSkipListArray[1] = ?.
-         cSkipListArray[2] = ?.
-         
-         this-object:ProDataSource = hDataSourceArray.
-        this-object:SkipList = cSkipListArray.
-                 
     end constructor.
     
     method public void Read(input filter as FilterParams, output dataset-handle hDataset):

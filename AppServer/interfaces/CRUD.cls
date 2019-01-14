@@ -18,6 +18,7 @@ interface interfaces.CRUD:
     method public void Read(filter as FilterParams, output dataset-handle hDataSet). 
     method public void Create(input jsonObject as JsonObject, output dataset-handle hDataSet).
     method public void Update(filter as FilterParams, input jsonObject as JsonObject, output dataset-handle hDataSet).
+    method public void Delete(filter as FilterParams, output dataset-handle hDataSet). 
     method public void CheckFieldList(fieldlist as character, output oFieldList as character, output lOk as logical). 
     method public void CreateEntityModel (output lcModel as longchar).
 

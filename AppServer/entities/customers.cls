@@ -28,6 +28,9 @@ class entities.customers inherits BusinessEntity implements interfaces.CRUD:
     define data-source srcCustomer for sports2000.Customer.
     define variable iSeq as integer no-undo.
     define variable daO as data.DataAccess.
+    define public property ttName as character no-undo initial "ttcustomer" get. set. 
+    define public property piName as character no-undo initial "custnum" get. set.
+    define public property dbName as character no-undo initial "customer" get. set.
     
     
     /*------------------------------------------------------------------------------
@@ -44,24 +47,41 @@ class entities.customers inherits BusinessEntity implements interfaces.CRUD:
     end method.
     
     method public void Create(input jsonObject as JsonObject, output dataset-handle hDataSet):
+        define variable hDataSource as handle no-undo.
+        define variable hBuffer as handle no-undo.
+        create data-source hDataSource.
+        create buffer hBuffer for table "customer".
+        hDataSource:add-source-buffer(hBuffer, "custnum").
+        dataset dscustomer:get-buffer-handle(1):ATTACH-DATA-SOURCE(hDataSource).
+           
+        dao = new data.DataAccess().
         
-        temp-table ttCustomer:tracking-changes = true.
-        temp-table ttCustomer:write-json("file", "/usr/wrk/emeapas/work/ttcustomer.json").
+        //dao:attachSource("ttcustomer", "CustNum", "Customer", "CustNum", "", ?, input-output dataset dsCustomer by-reference).
+        dataset dscustomer:get-buffer-handle (1):table-handle:tracking-changes = true.
+        //temp-table ttCustomer:write-json("file", "/usr/wrk/emeapas/work/ttcustomer.json").
         dataset dsCustomer:read-json('JsonObject', jsonObject).
-        for each ttcustomer exclusive-lock:
-            assign ttcustomer.custnum = current-value ( NextCustNum).
-        end.
-        temp-table ttCustomer:tracking-changes = false.
-        this-object:Createcustomers(input-output dataset dsCustomer by-reference).
-        hDataSet = dataset dsCustomer:handle.
+        dataset dscustomer:get-buffer-handle (1):table-handle:tracking-changes = false.
+        
+        dao:CommitChanges(piName, dataset dsCustomer by-reference).
+            hDataSet = dataset dsCustomer:handle.
     
     end method.
     
     method public void Update(input filter as FilterParams, input jsonObject as JsonObject, output dataset-handle hDataSet):
-        
+        //dao:attachSource(pcBuffers, pcFields, pcSources, pcSourceKeys, pcKeyValue, pFilter, phDataSet)
         dataset dsCustomer:read-json('JsonObject', jsonObject).
         this-object:Updatecustomers(filter, input-output dataset dsCustomer by-reference).
         hDataSet = dataset dsCustomer:handle.
+    
+    end method.
+    
+    method public void Delete(input filter as FilterParams, output dataset-handle hDataSet):
+        
+        dao = new data.DataAccess().
+        dao:attachSource("ttcustomer", "custnum", "customer", "custnum", filter:id1, filter, input-output dataset dsCustomer by-reference).
+        this-object:Deletecustomer(input-output dataset dsCustomer by-reference).
+        hDataSet = dataset dsCustomer:handle.
+        dao:dettachSource(dataset dsCustomer by-reference).
     
     end method.
         
@@ -72,7 +92,7 @@ class entities.customers inherits BusinessEntity implements interfaces.CRUD:
     method private void GetCustomers( input filter as FilterParams, output DATASET dsCustomer ):
         
         daO = new data.DataAccess().
-        daO:attachSource("ttcustomer", "custnum", "Customer", "custnum", filter:id1, filter, input-output dataset dsCustomer by-reference).
+        daO:attachSource(this-object:ttName, this-object:piName, this-object:dbName, this-object:piName, filter:id1, filter, input-output dataset dsCustomer by-reference).
         daO:dettachSource(dataset dsCustomer by-reference).    
             
     end method.
@@ -86,14 +106,13 @@ class entities.customers inherits BusinessEntity implements interfaces.CRUD:
     ------------------------------------------------------------------------------*/
     method public void Createcustomers( input-output DATASET dsCustomer):            
         
-
         dao = new data.DataAccess().
-        dao:attachSource("ttcustomer", "CustNum", "Customer", "CustNum", "", ?, input-output dataset dsCustomer by-reference).
-        dataset dsCustomer:write-json('file', '/usr/wrk/emeapas/work/dump.json').
+        //dao:attachSource("ttcustomer", "CustNum", "Customer", "CustNum", "", ?, input-output dataset dsCustomer by-reference).
         
-        dao:CommitChanges(input-output dataset dsCustomer by-reference).
+        
         //dataset dsCustomer:write-json('file', '/usr/wrk/emeapas/work/output.json').    
-        
+        //dataset dsCustomer:fill().
+        dao:dettachSource(dataset dscustomer by-reference).
     end method.    
     
     /*------------------------------------------------------------------------------
@@ -104,7 +123,7 @@ class entities.customers inherits BusinessEntity implements interfaces.CRUD:
     
         dao = new data.DataAccess().
         dao:attachSource("ttcustomer", "CustNum", "Customer", "CustNum", filter:id1, filter, input-output dataset dsCustomer by-reference).
-        dao:CommitChanges(input-output dataset dsCustomer by-reference).
+        dao:CommitChanges(piName, input-output dataset dsCustomer by-reference).
               
     end method.
     
@@ -112,7 +131,7 @@ class entities.customers inherits BusinessEntity implements interfaces.CRUD:
             Purpose:    Delete a record                                                               
             Notes:                                                                        
     ------------------------------------------------------------------------------*/
-    method public void Deletecustomers(input-output DATASET dsCustomer):                    
+    method public void Deletecustomer(input-output DATASET dsCustomer):                    
     
         
     end method.

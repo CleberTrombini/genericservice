@@ -35,39 +35,33 @@ class data.DataAccess:
                                         input pFilter as FilterParams,    
                                         input-output dataset-handle phDataSet ):
                                             
-        define variable iEntry          as integer   no-undo.
         define variable hDataSource     as handle    no-undo.
         define variable hBuffer         as handle    no-undo.
         define variable hQuery          as handle    no-undo.
-        define variable pcSource        as character no-undo.
-        define variable pcBuffer        as character no-undo.
-        define variable cWhere          as character no-undo.
         define variable qh              as handle    no-undo.
         define variable numRecs         as integer   no-undo.   
         define variable iSeq            as integer   no-undo.
-    
-        define variable h_buff          as handle    no-undo.
+        define variable iEntry          as integer   no-undo.
+        define variable iCount          as integer   no-undo.
+        define variable iMaxRows        as integer   initial ? no-undo.
+        define variable iSkipRows       as integer   initial ? no-undo.
+        define variable pcSource        as character no-undo.
+        define variable pcBuffer        as character no-undo.
+        define variable cWhere          as character no-undo.
         define variable cQuery          as character no-undo.
-        define variable lUseReposition  as logical           no-undo.
-        define variable iCount          as integer           no-undo.
-        define variable ablFilter       as character         no-undo.
-        define variable iMaxRows        as integer           initial ? no-undo.
-        define variable iSkipRows       as integer           initial ? no-undo.
-        define variable cOrderBy        as character         initial "" no-undo.
-        define variable id              as character         initial ? no-undo.
+        define variable cOrderBy        as character initial "" no-undo.
+        define variable cid             as character initial ? no-undo.
+        define variable lUseReposition  as logical   no-undo.
         
         iMaxRows    = pFilter:TopRecs   no-error.
         iSkipRows   = pFilter:SkipRecs  no-error.
         cWhere      = pFilter:Where     no-error.
-        id          = pFilter:rowid.
+        cid         = pFilter:rowid     no-error.
+        pcKeyValue  = pFilter:id1       no-error.
+        cOrderBy    = pFilter:SortBy    no-error.
         
-        if pFilter = ? then 
-            pcKeyValue = "1".
-        else
-            pcKeyValue = pFilter:id1.
-            
-        cOrderBy = pFilter:SortBy no-error.
         cWhere = " WHERE " + cWhere no-error.
+        
         if cOrderBy > "" then 
         do:
             cOrderBy = replace(cOrderBy, ",", " by ").
@@ -85,12 +79,11 @@ class data.DataAccess:
             create data-source hDataSource.
             create buffer hBuffer for table entry(iEntry, pcSources).
             hDataSource:add-source-buffer(hBuffer, entry(iEntry,pcSourceKeys)).
-            phDataSet:get-buffer-handle(iEntry):ATTACH-DATA-SOURCE(hDataSource).
-           
+            phDataSet:get-buffer-handle(iEntry):attach-data-source(hDataSource).
             
             pcSource = entry(1, pcSources).
             pcBuffer = entry(1, pcBuffers).
-            message iEntry pcKeyValue.
+            message pcSource pcBuffer.
             
             if (iEntry = 1 and pcKeyValue = "") then 
             do:
@@ -99,15 +92,15 @@ class data.DataAccess:
                 do:
                     create query qh.
                     qh:set-buffers(hBuffer).
-                    qh:query-prepare("PRESELECT EACH " + pcSource  + cWhere).
+                    qh:query-prepare("preselect each " + pcSource  + cWhere).
                     qh:query-open ().
                     numRecs = qh:num-results.
-                    phDataSet:get-buffer-handle(1):BATCH-SIZE = iMaxRows.
-                    message phDataSet:get-buffer-handle(1):batch-size.
+                    phDataSet:get-buffer-handle(1):batch-size = iMaxRows.
+                    
                 end.
                 else 
                 do:
-                    if id > "" then
+                    if cid > "" then
                         phDataSet:get-buffer-handle(iEntry):BATCH-SIZE = 1.
                     else
                         message "ja?".
@@ -123,21 +116,18 @@ class data.DataAccess:
             
                 hDataSource:fill-where-string = cWhere.
                 
-                message "fill where" hDataSource:fill-where-string.
-                
                 if lUseReposition then 
                 do:
                     hQuery = hDataSource:query.
                     
                     hQuery:query-open.
                     
-                    if id > "" and id <> "?" then 
+                    if cid > "" and cid <> "?" then 
                     do:
-                        hQuery:reposition-to-rowid(to-rowid(id)).
+                        hQuery:reposition-to-rowid(to-rowid(cid)).
                     end.
                     else if iSkipRows <> ? and iSkipRows > 0 then 
                         do:
-                            message iSkipRows.
                             hQuery:reposition-to-row(iSkipRows) no-error.
                             if not hbuffer:available then
                             hQuery:get-next() no-error.
@@ -157,21 +147,21 @@ class data.DataAccess:
                                     
                         iCount = iCount + 1.
                     end.
-                    phDataSet:write-json('file', '/usr/wrk/emeapas/work/phDataSet.json').
+                    //phDataSet:write-json('file', '/usr/wrk/emeapas/work/phDataSet.json').
                 end.
                 else 
                 do:
-                    if id > "" then hDataSource:restart-rowid(1)
-                        = to-rowid ((id)).
-                    phDataSet:get-buffer-handle(iEntry):set-callback ("AFTER-ROW-FILL", "AddIdField").
+                    if cid > "" then hDataSource:restart-rowid(1)
+                        = to-rowid ((cid)).
+                    phDataSet:get-buffer-handle(iEntry):set-callback ("after-row-fill", "AddIdField").
                     phDataSet:fill().
                 end.
             end. /* DO IF iEntry = 1 */
             else do:
                 create query hQuery.
                 hQuery:add-buffer(hBuffer).
-                hQuery:query-prepare("FOR EACH " + ENTRY(1, pcSources) +
-                    " WHERE " + ENTRY(1, pcSourceKeys) + " = " + pcKeyValue).
+                hQuery:query-prepare("for each " + entry(1, pcSources) +
+                    " WHERE " + entry(1, pcSourceKeys) + " = " + pcKeyValue).
                 hDataSource:query = hQuery.
                 hQuery:query-open.
                 hQuery:get-next () no-error.
@@ -207,72 +197,75 @@ class data.DataAccess:
     
         define variable iBuff as integer no-undo.
   
-        do iBuff = 1 to phDataSet:NUM-BUFFERS:
-            phDataSet:GET-BUFFER-HANDLE(iBuff):DETACH-DATA-SOURCE().
+        do iBuff = 1 to phDataSet:num-buffers:
+            phDataSet:get-buffer-handle(iBuff):detach-data-source().
         end.
     end method.
     
     
-    method public void CommitChanges (input-output dataset-handle hDataSet):
+    method public void CommitChanges (input pcSkipList as character, input-output dataset-handle hDataSet):
     
         define variable hTopBuff    as handle  no-undo.
         define variable iBuff       as integer no-undo.
         
        
-        do iBuff = 1 to hDataSet:NUM-TOP-BUFFERS:
-            hTopBuff = hDataSet:GET-TOP-BUFFER(iBuff).
+        do iBuff = 1 to hDataSet:num-top-buffers:
+            hTopBuff = hDataSet:get-top-buffer(iBuff).
             
             /* Skip the reposition children. */
             if hTopBuff:parent-relation ne ? then next. 
-            this-object:traverseBuffers(hTopBuff, dataset-handle hDataSet).
+            this-object:traverseBuffers(pcSkipList, hTopBuff, dataset-handle hDataSet by-reference).
         end. /* END DO iBuff */
     
     end method.
     
-    method private void traverseBuffers (input phBuffer as handle, input-output dataset-handle hDataSet):
+    method private void traverseBuffers (input pcSkipList as character, input phBuffer as handle, input-output dataset-handle hDataSet):
             define variable iChildRel as integer no-undo.
         
-            this-object:saveBuffer(phBuffer, dataset-handle hDataSet).
+            this-object:saveBuffer(pcSkipList, phBuffer, dataset-handle hDataSet by-reference).
             do iChildRel = 1 to phBuffer:num-child-relations:
-                this-object:traverseBuffers(phBuffer:get-child-relation(iChildRel):CHILD-BUFFER, dataset-handle hDataSet).
+                this-object:traverseBuffers(pcSkipList, phBuffer:get-child-relation(iChildRel):CHILD-BUFFER, dataset-handle hDataSet by-reference).
             end. /* END DO iChildRel */
     end method.
     
-    method private void saveBuffer (input phBuffer as handle, input-output dataset-handle hDataSet):
+    method private void saveBuffer (input pcSkipList as character, input phBuffer as handle, input-output dataset-handle hDataSet):
         
-        define variable hBeforeBuff as handle    no-undo.
-        define variable hBeforeQry  as handle    no-undo.
-        define variable cLogicProc  as character no-undo.
-       
-       
+        define variable hBeforeBuff as handle       no-undo.
+        define variable hBeforeQry  as handle       no-undo.
+        define variable cLogicProc  as character    no-undo.
+        define variable hDataSource as handle       no-undo.
+        define variable hBuffer     as handle       no-undo.
+
+        
         hBeforeBuff = phBuffer:before-buffer.
         if valid-handle(hBeforeBuff) then 
         do:
-
+            
     /*        Create a query on the before buffer BIttCust, then read through the change records*/
     /*        and commit the changes to the database                                            */
             
             
             create query hBeforeQry.
             hBeforeQry:add-buffer(hBeforeBuff).
-            hBeforeQry:query-prepare("FOR EACH " + hBeforeBuff:name).
+            hBeforeQry:query-prepare("for each " + hBeforeBuff:name).
             hBeforeQry:query-open().
             hBeforeQry:get-first().
             
             do while not (hBeforeQry:query-off-end):
                 
                 
-                message "CommitChanges : " hBeforeBuff:name skip
+            /*
+                    message "CommitChanges : " hBeforeBuff:name skip
                     hBeforeBuff:row-state
-                    hBeforeBuff:buffer-field(1):BUFFER-VALUE skip
-                    hBeforeBuff:buffer-field(2):NAME
-                    hBeforeBuff:buffer-field(2):BUFFER-VALUE
+                    hBeforeBuff:buffer-field(1):buffer-value skip
+                    hBeforeBuff:buffer-field(2):name
+                    hBeforeBuff:buffer-field(2):buffer-value
                    .
-                
+            */
                 /* The actual SAVE to the database */
                 if not hBeforeBuff:error then
-                    hBeforeBuff:save-row-changes().
-    
+                    hBeforeBuff:save-row-changes(1, pcSkipList).
+                  
                 /* If there was an error signal that this row did not make it into the database. */
                 if hBeforeBuff:error then
                     assign 
@@ -282,5 +275,6 @@ class data.DataAccess:
             end. /* DO WHILE NOT QUERY-OFF-END */
             delete object hBeforeQry.
         end. /* DO IF VALID-HANDLE */
+        
     end method.
 end class.

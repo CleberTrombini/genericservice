@@ -223,7 +223,6 @@ class GenericService inherits WebHandler:
         
     end method.
     
-    
     method override protected integer HandlePut(input poRequest as OpenEdge.Web.IWebRequest):
     
         define variable response    as WebResponse       no-undo.
@@ -277,6 +276,69 @@ class GenericService inherits WebHandler:
         end.
         else do:
             dynClass:Update(filter, body, output dataset-handle hDataSet).
+            hDataSet:write-json('longchar', responseBody ).
+        end.
+        
+        response:ContentType = "application/json".
+        writer:write(responseBody).
+        writer:flush().
+        writer:close().
+        
+    end method.
+    
+        method override protected integer HandleDelete(input poRequest as OpenEdge.Web.IWebRequest):
+    
+        define variable response    as WebResponse       no-undo.
+        define variable writer      as WebResponseWriter no-undo.
+        define variable body        as jsonObject        no-undo.
+        
+        define variable entityName  as character         no-undo.
+        define variable entityName2 as character         no-undo.
+        define variable id1         as character         no-undo.
+        define variable id2         as character         no-undo.
+        define variable queryString as character         no-undo.        
+        define variable oFieldlist  as character         no-undo.
+        define variable lcModel     as longchar          no-undo.   
+        define variable apiType     as character         no-undo.   
+        define variable responseBody as longchar         no-undo.
+        
+        define variable filter      as FilterParams      no-undo.
+        define variable lOk         as logical           no-undo initial true.   
+        
+        define variable entity      as GenericEntity     no-undo.
+        define variable dynClass    as interfaces.CRUD   no-undo.
+        define variable dynClass2   as interfaces.CRUD   no-undo.
+        
+        define variable hDataSet    as handle            no-undo.
+        define variable hTempTable  as handle            no-undo.
+        define variable hCP         as handle            no-undo.
+       
+        define variable jsonObject  as JsonObject        no-undo.       
+        define variable jsonArray   as JsonArray         no-undo.
+        
+        response    = new WebResponse().        
+        writer      = new WebResponseWriter(response).
+        entityName  = poRequest:GetPathParameter("entityname").
+        apiType     = poRequest:GetPathParameter("apitype").
+        id1         = poRequest:GetPathParameter("id1").
+        
+        body        = cast(poRequest:Entity, JsonObject).
+        
+        filter = new FilterParams(entityName, "", "", id1, "").
+        
+        dynClass = dynamic-new string("entities." + entityName) () no-error.
+        
+        if dynClass = ? then
+        do:
+                response:StatusCode = 400.
+                jsonObject = new JsonObject().
+                jsonObject:Add("Error", "Following entities or combination of these entities do not exist for this api").
+                jsonObject:Add("Entity", right-trim(left-trim(entityName + "," + entityName2, ","), ",")).
+                
+                responseBody = jsonObject:GetJsonText().
+        end.
+        else do:
+            dynClass:Delete(filter, output dataset-handle hDataSet).
             hDataSet:write-json('longchar', responseBody ).
         end.
         
