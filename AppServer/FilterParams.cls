@@ -1,10 +1,11 @@
-/** 
-**/
+
 /*------------------------------------------------------------------------
     File        : FilterParams
     Author(s)   : rdroge
+    Created     : Jan 10, 2019 8:45:21 AM 2019
     Notes       : Input parameters for filtering 
   ----------------------------------------------------------------------*/
+
 block-level on error undo, throw.
 
 using FilterParams.*.

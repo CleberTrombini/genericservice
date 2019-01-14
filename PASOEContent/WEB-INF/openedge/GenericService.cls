@@ -3,8 +3,8 @@
    Purpose     : 
    Syntax      : 
    Description : 
-   Author(s)   : ruben
-   Created     : Mon Aug 31 11:21:00 EST 2015
+   Author(s)   : rdroge
+   Created     : Jan 10, 2019 8:45:21 AM 2019
    Notes       : 
  ----------------------------------------------------------------------*/
 
@@ -24,7 +24,9 @@ class GenericService inherits WebHandler:
     method override protected integer HandleGet(input poRequest as OpenEdge.Web.IWebRequest):
         define variable response    as WebResponse       no-undo.
         define variable writer      as WebResponseWriter no-undo.
+        
         define variable body        as longchar          no-undo.
+        define variable lcModel     as longchar          no-undo.   
         
         define variable entityName  as character         no-undo.
         define variable entityName2 as character         no-undo.
@@ -32,12 +34,11 @@ class GenericService inherits WebHandler:
         define variable id2         as character         no-undo.
         define variable queryString as character         no-undo.        
         define variable oFieldlist  as character         no-undo.
-        define variable lcModel     as longchar          no-undo.   
         define variable apiType     as character         no-undo.   
         
-        define variable filter      as FilterParams      no-undo.
         define variable lOk         as logical           no-undo initial true.   
         
+        define variable filter      as FilterParams      no-undo.
         define variable entity      as GenericEntity     no-undo.
         define variable dynClass    as interfaces.CRUD   no-undo.
         define variable dynClass2   as interfaces.RO     no-undo.
@@ -56,12 +57,10 @@ class GenericService inherits WebHandler:
         id1         = poRequest:GetPathParameter("id1").
         id2         = poRequest:GetPathParameter("id2").
         apiType     = poRequest:GetPathParameter("apitype").
-        
-        
         queryString = poRequest:GetContextValue("QUERY_STRING").
+        
         if apiType = "data" then
         do:
-        
             filter = new FilterParams(entityName, entityName2, querystring, id1, id2).
             
             entityName = "entities." + entityName.
@@ -120,7 +119,6 @@ class GenericService inherits WebHandler:
                 
                 do ii=2 to hDataSet:num-buffers:
                     hTempTable = hDataSet:get-buffer-handle(ii):table-handle.
-                //  message hTempTAble:name.
                     jsonArray = new JsonArray().
                     jsonArray:READ(hTempTable).
                     jsonObject:Add(entityName2, jsonArray ).
@@ -358,9 +356,5 @@ class GenericService inherits WebHandler:
         
         undo, throw new Progress.Lang.AppError("This method is not implemented").
     end method.
-    
-        
-    
-         
     
 end class.
