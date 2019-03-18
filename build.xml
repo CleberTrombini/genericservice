@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="QA Staging" basedir=".">
+	<taskdef resource="PCT.properties" classpath="/var/jenkins_home/PCT.jar" />
+	<typedef resource="types.properties" classpath="/var/jenkins_home/PCT.jar"/>
+	<target name="compile">
+		<tstamp/>
+ 		<mkdir dir="build"/>
+		<PCTCreateBase dbName="sports2000" destDir="db" schemaFile="db/sports2000.df" dlcHome="/usr/dlc" />
+		<PCTCompile destDir="build" dlcHome="/usr/dlc">
+		<propath>
+  			<pathelement location="AppServer" />
+			<pathelement location="/usr/dlc/tty/OpenEdge.BusinessLogic.pl" />
+  			<pathelement location="/usr/dlc/tty/netlib/OpenEdge.Net.pl" />
+		</propath>
+ 			<fileset dir="AppServer">
+				<include name="*.cls" />
+ 				<include name="**/*.cls" />
+ 				<include name="*.p" />
+ 			</fileset>
+			<PCTConnection dbName="sports2000" dbDir="db/sports2000" singleUser="true" />
+		 </PCTCompile>
+	</target>
+</project>
