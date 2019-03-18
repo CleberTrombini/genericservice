@@ -94,7 +94,7 @@ class entities.items inherits BusinessEntity:
             super:ReadData().
     
     end method.
-    {entities\inc\metadata.i &entity=Item}
+    {entities/inc/metadata.i &entity=Item}
       
     /*------------------------------------------------------------------------------
             Purpose: Create one or more new records                                                               
