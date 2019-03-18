@@ -6,7 +6,7 @@
 		<tstamp/>
  		<mkdir dir="build"/>
 		<mkdir dir="db"/>
-		<PCTCreateBase dbName="sports2000" destDir="db" schemaFile="db/sports2000.df" dlcHome="/usr/dlc" />
+		<PCTCreateBase dbName="sports2000" destDir="db" schemaFile="AppServer/db/sports2000.df" dlcHome="/usr/dlc" />
 		<PCTCompile destDir="build" dlcHome="/usr/dlc">
 		<propath>
   			<pathelement location="AppServer" />
