@@ -5,6 +5,11 @@
 	<target name="compile">
 		<tstamp/>
  		<mkdir dir="build"/>
+		<delete>
+		   <fileset dir="db">
+		      <include name="*"/>
+		   </fileset>
+		</delete>
 		<mkdir dir="db"/>
 		<PCTCreateBase dbName="sports2000" destDir="db" schemaFile="AppServer/db/sports2000.df" dlcHome="/usr/dlc" />
 		<PCTCompile destDir="build" dlcHome="/usr/dlc">
@@ -13,12 +18,13 @@
 			<pathelement location="/usr/dlc/tty/OpenEdge.BusinessLogic.pl" />
   			<pathelement location="/usr/dlc/tty/netlib/OpenEdge.Net.pl" />
 		</propath>
+			<PCTConnection dbName="sports2000" dbDir="db" singleUser="true" />	
  			<fileset dir="AppServer">
 				<include name="*.cls" />
  				<include name="**/*.cls" />
  				<include name="*.p" />
  			</fileset>
-			<PCTConnection dbName="sports2000" dbDir="db" singleUser="true" />
+			
 		 </PCTCompile>
 	</target>
 </project>
