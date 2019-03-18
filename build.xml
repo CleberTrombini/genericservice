@@ -18,7 +18,7 @@
  				<include name="**/*.cls" />
  				<include name="*.p" />
  			</fileset>
-			<PCTConnection dbName="sports2000" dbDir="db/sports2000" singleUser="true" />
+			<PCTConnection dbName="sports2000" dbDir="db" singleUser="true" />
 		 </PCTCompile>
 	</target>
 </project>
