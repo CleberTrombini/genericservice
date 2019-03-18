@@ -14,7 +14,7 @@ using Progress.Lang.*.
 
 block-level on error undo, throw.
 
-class GenericEntity: 
+class generics.GenericEntity: 
 
     define variable GenericServiceName    as character no-undo initial "GenericService".
     define variable entityName            as character no-undo.

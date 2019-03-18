@@ -15,7 +15,7 @@ using OpenEdge.Net.*.
 using OpenEdge.Net.HTTP.*.
 using OpenEdge.Web.*.
 using interfaces.CRUD.*.
-
+using interfaces.RO.*.
 
 block-level on error undo, throw.
 
@@ -62,7 +62,6 @@ class GenericService inherits WebHandler:
         if apiType = "data" then
         do:
             filter = new FilterParams(entityName, entityName2, querystring, id1, id2).
-            
             entityName = "entities." + entityName.
             entity = new GenericEntity(entityName).
             dynClass = dynamic-new string(entityName) () no-error.
@@ -120,8 +119,8 @@ class GenericService inherits WebHandler:
                 do ii=2 to hDataSet:num-buffers:
                     hTempTable = hDataSet:get-buffer-handle(ii):table-handle.
                     jsonArray = new JsonArray().
-                    jsonArray:READ(hTempTable).
-                    jsonObject:Add(entityName2, jsonArray ).
+                    jsonArray:read(hTempTable).
+                    jsonObject:add(entityName2, jsonArray ).
                                            
                 end.
                 body = jsonObject:GetJsonText(). 
@@ -129,10 +128,10 @@ class GenericService inherits WebHandler:
             else if lOk then
             do:
                 response:StatusCode = 200.
-                dynClass:Read(filter, output DATASET-HANDLE hDataSet).
+                dynClass:Read(filter, output dataset-handle hDataSet).
                 hTempTable = hDataSet:get-buffer-handle(1):table-handle.
                 jsonObject = new JsonObject().
-                jsonObject:Read(hTempTable).
+                jsonObject:read(hTempTable).
                 body = jsonObject:GetJsonText().
             end.
         end.
@@ -284,7 +283,7 @@ class GenericService inherits WebHandler:
         
     end method.
     
-        method override protected integer HandleDelete(input poRequest as OpenEdge.Web.IWebRequest):
+    method override protected integer HandleDelete(input poRequest as OpenEdge.Web.IWebRequest):
     
         define variable response    as WebResponse       no-undo.
         define variable writer      as WebResponseWriter no-undo.

@@ -19,7 +19,7 @@ class entities.orders inherits BusinessEntity:
             Notes:                                                                        
     ------------------------------------------------------------------------------*/
     
-    {"entities\inc\orders.i"}
+    {"entities/inc/orders.i"}
     
     define data-source srcOrder for sports2000.Order.
     

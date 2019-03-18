@@ -11,6 +11,7 @@
 using Progress.Lang.*.
 using OpenEdge.BusinessLogic.BusinessEntity.
 using Progress.Json.ObjectModel.*.
+using generics.FilterParams.*.
 
 block-level on error undo, throw.
 
@@ -20,7 +21,7 @@ class entities.items inherits BusinessEntity:
             Notes:                                                                        
     ------------------------------------------------------------------------------*/
     
-    {"entities\inc\items.i"}
+    {"entities/inc/items.i"}
      
     define data-source srcItem for sports2000.Item.
     define variable iSeq as integer no-undo.
@@ -54,7 +55,7 @@ class entities.items inherits BusinessEntity:
                  
     end constructor.
     
-    method public void Read(input filter as FilterParams, output dataset-handle hDataset):
+    method public void Read(input filter as generics.FilterParams, output dataset-handle hDataset):
     
         if (filter:id1 > "" and filter:id2 = "") then 
         do:
@@ -73,7 +74,7 @@ class entities.items inherits BusinessEntity:
             Purpose:  Get one or more records, based on a filter string                                                                     
             Notes:                                                                        
     ------------------------------------------------------------------------------*/
-    method private void GetSingleItem( input filter as FilterParams, output DATASET dsItem ):
+    method private void GetSingleItem( input filter as generics.FilterParams, output DATASET dsItem ):
         
         empty temp-table ttItem no-error.       
         find Item 
@@ -82,7 +83,7 @@ class entities.items inherits BusinessEntity:
             buffer-copy Item to ttItem.
     end method.
     
-    method private void GetFiltereditems( input filter as FilterParams, output DATASET dsItem ):
+    method private void GetFiltereditems( input filter as generics.FilterParams, output DATASET dsItem ):
                 
         empty temp-table ttItem no-error.       
         

@@ -10,7 +10,7 @@
 
 using Progress.Lang.*.
 using OpenEdge.BusinessLogic.BusinessEntity.
-using FilterParams.*.
+using generics.FilterParams.*.
 using Progress.Json.ObjectModel.*.
 
 block-level on error undo, throw.
@@ -21,7 +21,7 @@ class entities.customersorders inherits BusinessEntity implements interfaces.RO:
             Notes:                                                                        
     ------------------------------------------------------------------------------*/
     
-    {"entities\inc\custorders.i"}
+    {"entities/inc/custorders.i"}
     
     /* TODO Fill in appropriate datasource tables */ 
     define public property ttName as character no-undo initial "ttcustomer,ttorder" get. set. 
@@ -40,7 +40,7 @@ class entities.customersorders inherits BusinessEntity implements interfaces.RO:
         super (dataset dsCustOrder:HANDLE).
     end constructor.
     
-    method public void Read(input filter as FilterParams, output dataset-handle hDataset):
+    method public void Read(input filter as generics.FilterParams, output dataset-handle hDataset):
         
         this-object:ReadCustomersOrders(filter, output dataset-handle hDataSet).
     
@@ -51,7 +51,7 @@ class entities.customersorders inherits BusinessEntity implements interfaces.RO:
             Notes:                                                                        
     ------------------------------------------------------------------------------*/
     method public void ReadCustomersOrders(
-            input filter as FilterParams, 
+            input filter as generics.FilterParams, 
             output DATASET dsCustOrder):
                 
             define variable iCustNum as integer no-undo.

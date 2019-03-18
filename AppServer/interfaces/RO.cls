@@ -10,12 +10,12 @@
   ----------------------------------------------------------------------*/
 
 using Progress.Lang.*.
-using FilterParams.*.
+using generics.FilterParams.*.
 using Progress.Json.ObjectModel.*.
 
 interface interfaces.RO:  
    
-    method public void Read(filter as FilterParams, output dataset-handle hDataSet). 
+    method public void Read(filter as generics.FilterParams, output dataset-handle hDataSet). 
     method public void CheckFieldList(fieldlist as character, output oFieldList as character, output lOk as logical). 
     method public void CreateEntityModel (output lcModel as longchar).
 

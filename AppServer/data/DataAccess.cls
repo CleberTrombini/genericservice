@@ -10,7 +10,7 @@
   ----------------------------------------------------------------------*/
 
 using Progress.Lang.*.
-using FilterParams.*.
+using generics.FilterParams.
 
 block-level on error undo, throw.
 
@@ -45,8 +45,6 @@ class data.DataAccess:
         define variable iCount          as integer   no-undo.
         define variable iMaxRows        as integer   initial ? no-undo.
         define variable iSkipRows       as integer   initial ? no-undo.
-        define variable pcSource        as character no-undo.
-        define variable pcBuffer        as character no-undo.
         define variable cWhere          as character no-undo.
         define variable cQuery          as character no-undo.
         define variable cOrderBy        as character initial "" no-undo.
@@ -80,100 +78,98 @@ class data.DataAccess:
             create buffer hBuffer for table entry(iEntry, pcSources).
             hDataSource:add-source-buffer(hBuffer, entry(iEntry,pcSourceKeys)).
             phDataSet:get-buffer-handle(iEntry):attach-data-source(hDataSource).
-            
-            pcSource = entry(1, pcSources).
-            pcBuffer = entry(1, pcBuffers).
-            message pcSource pcBuffer.
-            
-            if (iEntry = 1 and pcKeyValue = "") then 
+            if pFilter <> ? then
             do:
-                
-                if iMaxRows <> ? and iMaxRows > 0 then 
+                if (iEntry = 1 and pcKeyValue = "") then 
                 do:
-                    create query qh.
-                    qh:set-buffers(hBuffer).
-                    qh:query-prepare("preselect each " + pcSource  + cWhere).
-                    qh:query-open ().
-                    numRecs = qh:num-results.
-                    phDataSet:get-buffer-handle(1):batch-size = iMaxRows.
                     
-                end.
-                else 
-                do:
-                    if cid > "" then
-                        phDataSet:get-buffer-handle(iEntry):BATCH-SIZE = 1.
-                    else
-                        message "ja?".
-                        phDataSet:get-buffer-handle(iEntry):BATCH-SIZE = 0.
-                end.
-                
-                if cOrderBy = ? then cOrderBy = "".
-            
-                cWhere =    if cWhere > "" then 
-                                (cWhere + " " + cOrderBy)
-                            else 
-                                (cOrderBy).
-            
-                hDataSource:fill-where-string = cWhere.
-                
-                if lUseReposition then 
-                do:
-                    hQuery = hDataSource:query.
-                    
-                    hQuery:query-open.
-                    
-                    if cid > "" and cid <> "?" then 
+                    if iMaxRows <> ? and iMaxRows > 0 then 
                     do:
-                        hQuery:reposition-to-rowid(to-rowid(cid)).
+                        create query qh.
+                        qh:set-buffers(hBuffer).
+                        qh:query-prepare("preselect each " + entry(1, pcSources)  + cWhere).
+                        qh:query-open ().
+                        numRecs = qh:num-results.
+                        phDataSet:get-buffer-handle(1):batch-size = iMaxRows.
+                        
                     end.
-                    else if iSkipRows <> ? and iSkipRows > 0 then 
+                    else 
+                    do:
+                        if cid > "" then
+                            phDataSet:get-buffer-handle(iEntry):BATCH-SIZE = 1.
+                        else
+                            message "ja?".
+                            phDataSet:get-buffer-handle(iEntry):BATCH-SIZE = 0.
+                    end.
+                    
+                    if cOrderBy = ? then cOrderBy = "".
+                
+                    cWhere =    if cWhere > "" then 
+                                    (cWhere + " " + cOrderBy)
+                                else 
+                                    (cOrderBy).
+                
+                    hDataSource:fill-where-string = cWhere.
+                    
+                    if lUseReposition then 
+                    do:
+                        hQuery = hDataSource:query.
+                        
+                        hQuery:query-open.
+                        
+                        if cid > "" and cid <> "?" then 
                         do:
-                            hQuery:reposition-to-row(iSkipRows) no-error.
-                            if not hbuffer:available then
-                            hQuery:get-next() no-error.
+                            hQuery:reposition-to-rowid(to-rowid(cid)).
                         end.
-                    iCount = 0.
-                    repeat while not hQuery:query-off-end and (iMaxRows = ? or iCount < iMaxRows):
-                        hQuery:get-next () no-error.
-                        if hBuffer:available then do:
-                        
-                            phDataSet:get-buffer-handle(1):buffer-create.
-                            phDataSet:get-buffer-handle(1):buffer-copy (hBuffer).
-                            phDataSet:get-buffer-handle(1):buffer-field("id"):buffer-value() = string(hBuffer:rowid).
-                            iSeq = iSeq + 1.
-                            phDataSet:get-buffer-handle(1):buffer-field("seq"):buffer-value() = string(iSeq).
-                        
+                        else if iSkipRows <> ? and iSkipRows > 0 then 
+                            do:
+                                hQuery:reposition-to-row(iSkipRows) no-error.
+                                if not hbuffer:available then
+                                hQuery:get-next() no-error.
+                            end.
+                        iCount = 0.
+                        repeat while not hQuery:query-off-end and (iMaxRows = ? or iCount < iMaxRows):
+                            hQuery:get-next () no-error.
+                            if hBuffer:available then do:
+                            
+                                phDataSet:get-buffer-handle(1):buffer-create.
+                                phDataSet:get-buffer-handle(1):buffer-copy (hBuffer).
+                                phDataSet:get-buffer-handle(1):buffer-field("id"):buffer-value() = string(hBuffer:rowid).
+                                iSeq = iSeq + 1.
+                                phDataSet:get-buffer-handle(1):buffer-field("seq"):buffer-value() = string(iSeq).
+                            
+                            end.
+                                        
+                            iCount = iCount + 1.
                         end.
-                                    
-                        iCount = iCount + 1.
+                        //phDataSet:write-json('file', '/usr/wrk/emeapas/work/phDataSet.json').
                     end.
-                    //phDataSet:write-json('file', '/usr/wrk/emeapas/work/phDataSet.json').
-                end.
-                else 
-                do:
-                    if cid > "" then hDataSource:restart-rowid(1)
-                        = to-rowid ((cid)).
-                    phDataSet:get-buffer-handle(iEntry):set-callback ("after-row-fill", "AddIdField").
-                    phDataSet:fill().
-                end.
-            end. /* DO IF iEntry = 1 */
-            else do:
-                create query hQuery.
-                hQuery:add-buffer(hBuffer).
-                hQuery:query-prepare("for each " + entry(1, pcSources) +
-                    " WHERE " + entry(1, pcSourceKeys) + " = " + pcKeyValue).
-                hDataSource:query = hQuery.
-                hQuery:query-open.
-                hQuery:get-next () no-error.
-                if hBuffer:available then do:
-                    phDataSet:get-buffer-handle(1):buffer-create.
-                    phDataSet:get-buffer-handle(1):buffer-copy (hBuffer).
-                    phDataSet:get-buffer-handle(1):buffer-field("id"):buffer-value() = string(hBuffer:rowid).
-                    iSeq = iSeq + 1.
-                    phDataSet:get-buffer-handle(1):buffer-field("seq"):buffer-value() = string(iSeq).
-                end.
-            end. 
-            
+                    else 
+                    do:
+                        if cid > "" then hDataSource:restart-rowid(1)
+                            = to-rowid ((cid)).
+                        phDataSet:get-buffer-handle(iEntry):set-callback ("after-row-fill", "AddIdField").
+                        phDataSet:fill().
+                    end.
+                end. /* DO IF iEntry = 1 */
+                else do:
+                    create query hQuery.
+                    hQuery:add-buffer(hBuffer).
+                    hQuery:query-prepare("for each " + entry(1, pcSources) +
+                        " where " + entry(1, pcSourceKeys) + " = " + pcKeyValue).
+                    hDataSource:query = hQuery.
+                    hQuery:query-open.
+                    hQuery:get-next () no-error.
+                    if hBuffer:available then do:
+                        phDataSet:get-buffer-handle(1):buffer-create.
+                        phDataSet:get-buffer-handle(1):buffer-copy (hBuffer).
+                        phDataSet:get-buffer-handle(1):buffer-field("id"):buffer-value() = string(hBuffer:rowid).
+                        iSeq = iSeq + 1.
+                        phDataSet:get-buffer-handle(1):buffer-field("seq"):buffer-value() = string(iSeq).
+                        phDataSet:write-json('file', '/usr/wrk/emeapas/work/dataset.json', true, ?, ?,?,true ).
+                    end.
+                end. 
+            end.
         end. /* DO iEntry = 1 TO NUM-ENTRIES */
 
         
@@ -254,14 +250,14 @@ class data.DataAccess:
             do while not (hBeforeQry:query-off-end):
                 
                 
-            /*
+            
                     message "CommitChanges : " hBeforeBuff:name skip
                     hBeforeBuff:row-state
                     hBeforeBuff:buffer-field(1):buffer-value skip
                     hBeforeBuff:buffer-field(2):name
                     hBeforeBuff:buffer-field(2):buffer-value
                    .
-            */
+            
                 /* The actual SAVE to the database */
                 if not hBeforeBuff:error then
                     hBeforeBuff:save-row-changes(1, pcSkipList).

@@ -8,9 +8,9 @@
 
 block-level on error undo, throw.
 
-using FilterParams.*.
+using OpenEdge.Net.URI.*.
 
-class FilterParams:
+class generics.FilterParams:
     define public property entityName   as character    no-undo get. set.
     define public property entityName2  as character    no-undo get. set.
     define public property TopRecs      as integer      initial 0 no-undo get. set.
