@@ -18,7 +18,7 @@
   /** Dynamically generated schema file **/
    
 
-define temp-table ttOrder before-table bttOrder
+define temp-table ttOrder serialize-name "orders" before-table bttOrder
 field Ordernum as integer initial "0" label "Order Num"
 field CustNum as integer initial "0" label "Cust Num"
 field OrderDate as date initial "TODAY" label "Ordered"
@@ -34,6 +34,8 @@ field ShipToID as integer initial "0" label "Ship To ID"
 field OrderStatus as character initial "Ordered" label "Order Status"
 field WarehouseNum as integer initial "0" label "Warehouse Num"
 field Creditcard as character initial "Visa" label "Credit Card"
+field id as character
+field seq as integer
 index CustOrder is  unique  CustNum  ascending  Ordernum  ascending 
 index OrderDate  OrderDate  ascending 
 index OrderNum is  primary  unique  Ordernum  ascending 
