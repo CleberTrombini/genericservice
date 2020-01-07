@@ -11,11 +11,11 @@
 using Progress.Lang.*.
 using OpenEdge.BusinessLogic.BusinessEntity.
 using Progress.Json.ObjectModel.*.
-using generics.FilterParams.*.
+using data.DataAccess.*.
 
 block-level on error undo, throw.
 
-class entities.items inherits BusinessEntity:
+class entities.items inherits BusinessEntity implements interfaces.CRUD:
     /*------------------------------------------------------------------------------
             Purpose:                                                                      
             Notes:                                                                        
@@ -25,106 +25,98 @@ class entities.items inherits BusinessEntity:
      
     define data-source srcItem for sports2020.Item.
     define variable iSeq as integer no-undo.
+    define variable daO as data.DataAccess.
+    define public property ttName as character no-undo initial "ttitem" get. set. 
+    define public property piName as character no-undo initial "itemnum" get. set.
+    define public property dbName as character no-undo initial "item" get. set.
     
     /*------------------------------------------------------------------------------
             Purpose:                                                                      
             Notes:                                                                        
     ------------------------------------------------------------------------------*/
     constructor public items():
-        
-        define variable hDataSourceArray as handle no-undo extent 1.
-        define variable cSkipListArray as character no-undo extent 1.
-        
-        super (dataset dsItem:HANDLE).
-        
-        /* Data Source for each table in dataset. Should be in table order as defined 
-            in DataSet */     
-         hDataSourceArray[1] =  data-source srcItem:HANDLE.
-         
-                  
-         /* Skip-list entry for each table in dataset. Should be in temp-table order 
-           as defined in DataSet */
-        /* Each skip-list entry is a comma-separated list of field names, to be
-            ignored in create stmt */
-             
-         cSkipListArray[1] = "".
-         
-         
-         this-object:ProDataSource = hDataSourceArray.
-        this-object:SkipList = cSkipListArray.
-                 
+        super (dataset dsitem:HANDLE).
     end constructor.
     
-    method public void Read(input filter as generics.FilterParams, output dataset-handle hDataset):
+        method public void Read(input filter as generics.FilterParams, output dataset-handle hDataSet):
+        this-object:Getitems(filter, output dataset dsitem by-reference).
+        hDataSet = dataset dsitem:handle.    
+    end method.
     
-        if (filter:id1 > "" and filter:id2 = "") then 
-        do:
-            this-object:GetSingleItem(filter, output dataset-handle hDataset).
-        end.
-        else if filter:filtered=true then 
-        do:
-            this-object:GetFiltereditems(filter, output dataset-handle hDataSet).
-        end.
-        else do:
-            this-object:GetAllitems(output dataset-handle hDataSet).
-        end.
+    method public void Create(input jsonObject as JsonObject, output dataset-handle hDataSet):
+        dao = new data.DataAccess().
+        dao:attachSource("ttitem", "itemnum", "item", "itemnum", "", ?, input-output dataset dsitem by-reference).
+        dataset dsitem:get-buffer-handle (1):table-handle:tracking-changes = true.
+        dataset dsitem:read-json('JsonObject', jsonObject).
+        dataset dsitem:get-buffer-handle (1):table-handle:tracking-changes = false.
+        
+        dao:CommitChanges(piName, dataset dsitem by-reference).
+        hDataSet = dataset dsitem:handle.
+    
+    end method.
+    
+    method public void Update(input filter as generics.FilterParams, input jsonObject as JsonObject, output dataset-handle hDataSet):
+        define variable hChanges as handle.
+        dao = new data.DataAccess().
+        dao:attachSource("ttitem", "itemnum", "item", "itemnum", filter:id1, filter, input-output dataset dsitem by-reference).
+        dataset dsitem:write-json('file', '/usr/wrk/emeapas/work/dsitem_before.json', true, ?, ?,?,true ).      
+        create dataset hChanges.
+        hChanges:create-like(dataset dsitem:handle).
+        hChanges:read-json('JsonObject', jsonObject).
+        
+        hChanges:get-changes(dataset dsitem:handle).
+        //hChanges:write-json('file', '/usr/wrk/emeapas/work/dsitem_before.json', true, ?, ?,?,true ).
+        hChanges:merge-changes(dataset dsitem:handle).
+        //dataset dsitem:get-buffer-handle (1):table-handle:tracking-changes = false.
+        hChanges:write-json('file', '/usr/wrk/emeapas/work/dsitem_after.json', true, ?, ?,?,true ).
+        //this-object:Updateitems(filter, input-output dataset dsitem by-reference).
+        dao:CommitChanges(piName, input-output dataset dsitem by-reference).
+        hDataSet = dataset dsitem:handle.
+    
+    end method.
+    
+    method public void Delete(input filter as generics.FilterParams, output dataset-handle hDataSet):
+        
+        dao = new data.DataAccess().
+        dao:attachSource("ttitem", "itemnum", "item", "itemnum", filter:id1, filter, input-output dataset dsitem by-reference).
+        this-object:Deleteitem(input-output dataset dsitem by-reference).
+        hDataSet = dataset dsitem:handle.
+        dao:dettachSource(dataset dsitem by-reference).
+    
     end method.
         
     /*------------------------------------------------------------------------------
             Purpose:  Get one or more records, based on a filter string                                                                     
             Notes:                                                                        
     ------------------------------------------------------------------------------*/
-    method private void GetSingleItem( input filter as generics.FilterParams, output DATASET dsItem ):
+    method private void Getitems( input filter as generics.FilterParams, output DATASET dsitem ):
         
-        empty temp-table ttItem no-error.       
-        find Item 
-            where Item.Itemnum = integer(filter:id1).
-            create ttItem.
-            buffer-copy Item to ttItem.
+        daO = new data.DataAccess().
+        daO:attachSource(this-object:ttName, this-object:piName, this-object:dbName, this-object:piName, filter:id1, filter, input-output dataset dsitem by-reference).
+        daO:dettachSource(dataset dsitem by-reference).    
+            
     end method.
     
-    method private void GetFiltereditems( input filter as generics.FilterParams, output DATASET dsItem ):
-                
-        empty temp-table ttItem no-error.       
-        
-    end method.
-    
-    method private void GetAllitems( output dataset dsItem ):
-    
-            super:ReadData().
-    
-    end method.
-    {entities/inc/metadata.i &entity=Item}
-      
-    /*------------------------------------------------------------------------------
-            Purpose: Create one or more new records                                                               
-            Notes:                                                                        
-    ------------------------------------------------------------------------------*/
-    method public void Createitems(input-output DATASET dsItem):            
-               
-        super:CreateData(DATASET dsItem by-reference).
-                
-    end method.    
+    {entities/inc/metadata.i &entity=item}
     
     /*------------------------------------------------------------------------------
             Purpose:  Update one or more records                                                                  
             Notes:                                                                        
     ------------------------------------------------------------------------------*/
-    method public void Updateitems(input-output DATASET dsItem):            
+    method public void Updateitems(input filter as generics.FilterParams, input-output DATASET dsitem):            
     
-        super:UpdateData(DATASET dsItem by-reference).      
-            
+        dao = new data.DataAccess().
+        dao:CommitChanges(piName, input-output dataset dsitem by-reference).
+              
     end method.
     
     /*------------------------------------------------------------------------------
             Purpose:    Delete a record                                                               
             Notes:                                                                        
     ------------------------------------------------------------------------------*/
-    method public void Deleteitems(input-output DATASET dsItem):                    
+    method public void Deleteitem(input-output DATASET dsitem):                    
     
-        super:DeleteData(DATASET dsItem by-reference).
         
-    end method.
-     
+    end method.     
     
 end class.

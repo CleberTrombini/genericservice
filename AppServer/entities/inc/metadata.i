@@ -47,8 +47,18 @@
         create tt{&entity}.       
     
         do ii = 1 to buffer tt{&entity}:num-fields:
+            define variable cdataType as character no-undo.
+            
+            case  buffer tt{&entity}:buffer-field(ii):data-type:
+                when "character"    then cdataType = "string".
+                when "decimal"      then cdataType = "number".
+                when "logical"      then cdataType = "boolean".
+                otherwise
+                    cdataType = buffer tt{&entity}:buffer-field(ii):data-type.
+            end case.
+                     
             if (buffer tt{&entity}:buffer-field(ii):name <> "seq" and buffer tt{&entity}:buffer-field(ii):name <> "id") then
-            joModel:add(buffer tt{&entity}:buffer-field(ii):name, buffer tt{&entity}:buffer-field(ii):data-type).
+            joModel:add(buffer tt{&entity}:buffer-field(ii):name, cdataType).
         end.
         
         lcModel = joModel:GetJsonText().
