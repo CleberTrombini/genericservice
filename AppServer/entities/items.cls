@@ -23,7 +23,7 @@ class entities.items inherits BusinessEntity:
     
     {"entities/inc/items.i"}
      
-    define data-source srcItem for sports2000.Item.
+    define data-source srcItem for sports2020.Item.
     define variable iSeq as integer no-undo.
     
     /*------------------------------------------------------------------------------

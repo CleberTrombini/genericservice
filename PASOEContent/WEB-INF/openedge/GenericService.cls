@@ -9,13 +9,14 @@
  ----------------------------------------------------------------------*/
 
 using Progress.Json.ObjectModel.*.
-using FilterParams.*.
+using generics.FilterParams.*.
 using Progress.Lang.*.
 using OpenEdge.Net.*.
 using OpenEdge.Net.HTTP.*.
 using OpenEdge.Web.*.
 using interfaces.CRUD.*.
 using interfaces.RO.*.
+using generics.GenericEntity.*.
 
 block-level on error undo, throw.
 
@@ -38,8 +39,8 @@ class GenericService inherits WebHandler:
         
         define variable lOk         as logical           no-undo initial true.   
         
-        define variable filter      as FilterParams      no-undo.
-        define variable entity      as GenericEntity     no-undo.
+        define variable filter      as generics.FilterParams      no-undo.
+        define variable entity      as generics.GenericEntity     no-undo.
         define variable dynClass    as interfaces.CRUD   no-undo.
         define variable dynClass2   as interfaces.RO     no-undo.
         
@@ -61,9 +62,9 @@ class GenericService inherits WebHandler:
         
         if apiType = "data" then
         do:
-            filter = new FilterParams(entityName, entityName2, querystring, id1, id2).
+            filter = new generics.FilterParams(entityName, entityName2, querystring, id1, id2).
             entityName = "entities." + entityName.
-            entity = new GenericEntity(entityName).
+            entity = new generics.GenericEntity(entityName).
             dynClass = dynamic-new string(entityName) () no-error.
             
             if entityName2 > "" then
@@ -176,10 +177,10 @@ class GenericService inherits WebHandler:
         define variable apiType     as character         no-undo.   
         define variable responseBody as longchar         no-undo.
         
-        define variable filter      as FilterParams      no-undo.
+        define variable filter      as generics.FilterParams      no-undo.
         define variable lOk         as logical           no-undo initial true.   
         
-        define variable entity      as GenericEntity     no-undo.
+        define variable entity      as generics.GenericEntity     no-undo.
         define variable dynClass    as interfaces.CRUD   no-undo.
         define variable dynClass2   as interfaces.CRUD   no-undo.
         
@@ -236,10 +237,10 @@ class GenericService inherits WebHandler:
         define variable apiType     as character         no-undo.   
         define variable responseBody as longchar         no-undo.
         
-        define variable filter      as FilterParams      no-undo.
+        define variable filter      as generics.FilterParams      no-undo.
         define variable lOk         as logical           no-undo initial true.   
         
-        define variable entity      as GenericEntity     no-undo.
+        define variable entity      as generics.GenericEntity     no-undo.
         define variable dynClass    as interfaces.CRUD   no-undo.
         define variable dynClass2   as interfaces.CRUD   no-undo.
         
@@ -258,7 +259,7 @@ class GenericService inherits WebHandler:
         
         body        = cast(poRequest:Entity, JsonObject).
         
-        filter = new FilterParams(entityName, "", "", id1, "").
+        filter = new generics.FilterParams(entityName, "", "", id1, "").
         
         dynClass = dynamic-new string("entities." + entityName) () no-error.
         
@@ -299,10 +300,10 @@ class GenericService inherits WebHandler:
         define variable apiType     as character         no-undo.   
         define variable responseBody as longchar         no-undo.
         
-        define variable filter      as FilterParams      no-undo.
+        define variable filter      as generics.FilterParams      no-undo.
         define variable lOk         as logical           no-undo initial true.   
         
-        define variable entity      as GenericEntity     no-undo.
+        define variable entity      as generics.GenericEntity     no-undo.
         define variable dynClass    as interfaces.CRUD   no-undo.
         define variable dynClass2   as interfaces.CRUD   no-undo.
         
@@ -321,7 +322,7 @@ class GenericService inherits WebHandler:
         
         body        = cast(poRequest:Entity, JsonObject).
         
-        filter = new FilterParams(entityName, "", "", id1, "").
+        filter = new generics.FilterParams(entityName, "", "", id1, "").
         
         dynClass = dynamic-new string("entities." + entityName) () no-error.
         

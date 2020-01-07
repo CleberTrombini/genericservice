@@ -25,7 +25,7 @@ class entities.customers inherits BusinessEntity implements interfaces.CRUD:
     {"entities/inc/customers.i"}
   
     
-    define data-source srcCustomer for sports2000.Customer.
+    define data-source srcCustomer for sports2020.Customer.
     define variable iSeq as integer no-undo.
     define variable daO as data.DataAccess.
     define public property ttName as character no-undo initial "ttcustomer" get. set. 
