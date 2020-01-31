@@ -7,7 +7,7 @@
  		<mkdir dir="build"/>
 		
 		<mkdir dir="db"/>
-		<sports2020 dbName="sports2020" destDir="db" dlcHome="/usr/dlc" />
+		<sports2000 dbName="sports2020" destDir="db" dlcHome="/usr/dlc" />
 		<PCTCompile destDir="build" dlcHome="/usr/dlc">
 		<propath>
   			<pathelement location="AppServer" />
