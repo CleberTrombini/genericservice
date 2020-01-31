@@ -5,7 +5,6 @@
 	<target name="compile">
 		<tstamp/>
  		<mkdir dir="build"/>
-		
 		<mkdir dir="db"/>
 		<sports2000 dbName="sports2020" destDir="db" dlcHome="/usr/dlc" />
 		<PCTCompile destDir="build" dlcHome="/usr/dlc">
@@ -20,7 +19,6 @@
  				<include name="**/*.cls" />
  				<include name="*.p" />
  			</fileset>
-			
 		 </PCTCompile>
 	</target>
 </project>
