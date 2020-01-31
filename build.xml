@@ -10,7 +10,7 @@
 		<PCTCompile destDir="build" dlcHome="/usr/dlc">
 		<propath>
   			<pathelement location="AppServer" />
-			<pathelement location="/usr/dlc/tty/OpenEdge.BusinessLogic.pl" />
+			<pathelement location="/usr/dlc/tty/OpenEdge.BusinessLogic.pl"/>
   			<pathelement location="/usr/dlc/tty/netlib/OpenEdge.Net.pl" />
 		</propath>
 			<PCTConnection dbName="sports2020" dbDir="db" singleUser="true" />	
