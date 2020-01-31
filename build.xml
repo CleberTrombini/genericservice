@@ -5,11 +5,7 @@
 	<target name="compile">
 		<tstamp/>
  		<mkdir dir="build"/>
-		<delete>
-		   <fileset dir="db">
-		      <include name="*"/>
-		   </fileset>
-		</delete>
+		
 		<mkdir dir="db"/>
 		<sports2000 dbName="sports2000" destDir="db" dlcHome="/usr/dlc" />
 		<PCTCompile destDir="build" dlcHome="/usr/dlc">
