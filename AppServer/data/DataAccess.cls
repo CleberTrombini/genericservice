@@ -98,7 +98,6 @@ class data.DataAccess:
                         if cid > "" then
                             phDataSet:get-buffer-handle(iEntry):BATCH-SIZE = 1.
                         else
-                            message "ja?".
                             phDataSet:get-buffer-handle(iEntry):BATCH-SIZE = 0.
                     end.
                     
