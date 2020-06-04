@@ -22,12 +22,12 @@
 		</PCTCompile>
 	</target>
 	<target name="test">
-		<ABLUnit>
-		  <fileset dir="AppServer/tests" includes="**/*.cls" />
-		  <propath>
-		    <pathelement path="AppServer" />
-		  	<pathelement path="AppServer/tests" />
-		  </propath>
-		</ABLUnit>
+	    <ABLUnit>
+	      <fileset dir="AppServer/tests" includes="**/*.cls" />
+	      <propath>
+	        <pathelement path="AppServer/tests" />
+	        <pathelement path="AppServer" />
+	      </propath>
+	    </ABLUnit>
 	</target>
 </project>
