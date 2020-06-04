@@ -8,17 +8,25 @@
 		<mkdir dir="db"/>
 		<sports2000 dbName="sports2020" destDir="db" dlcHome="/usr/dlc" />
 		<PCTCompile destDir="build" dlcHome="/usr/dlc">
-		<propath>
-  			<pathelement location="AppServer" />
-			<pathelement location="/usr/dlc/tty/OpenEdge.BusinessLogic.pl"/>
-  			<pathelement location="/usr/dlc/tty/netlib/OpenEdge.Net.pl" />
-		</propath>
+    		<propath>
+      			<pathelement location="AppServer" />
+    			<pathelement location="/usr/dlc/tty/OpenEdge.BusinessLogic.pl"/>
+      			<pathelement location="/usr/dlc/tty/netlib/OpenEdge.Net.pl" />
+    		</propath>
 			<PCTConnection dbName="sports2020" dbDir="db" singleUser="true" />	
  			<fileset dir="AppServer">
 				<include name="*.cls" />
  				<include name="**/*.cls" />
  				<include name="*.p" />
  			</fileset>
-		 </PCTCompile>
+		</PCTCompile>
+	</target>
+	<target name="test">
+		<ABLUnit>
+		  <fileset dir="AppServer/tests" includes="**/*.cls" />
+		  <propath>
+		    <pathelement path="AppServer" />
+		  </propath>
+		</ABLUnit>
 	</target>
 </project>
