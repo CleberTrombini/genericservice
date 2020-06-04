@@ -26,6 +26,7 @@
 		  <fileset dir="AppServer/tests" includes="**/*.cls" />
 		  <propath>
 		    <pathelement path="AppServer" />
+		  	<pathelement path="AppServer/tests" />
 		  </propath>
 		</ABLUnit>
 	</target>
