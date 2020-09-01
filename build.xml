@@ -31,7 +31,7 @@
 	    </ABLUnit>
 	</target>
 		<!-- Create the ablapp package -->
-	<target name="package" depends="clean, compile">
+	<target name="package" depends="compile">
 		<!-- Build and package the webapp -->
 		<ant antfile="${WEBAPP}/build.xml" target="package" inheritall="false" />
 		<!-- Package ablapp as zip-->
