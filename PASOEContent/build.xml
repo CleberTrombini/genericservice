@@ -30,15 +30,15 @@
 	<target name="package" depends="clean, compile">	
 		<mkdir dir="${WEBAPP.DIST.DIR}" />	
 		<!-- Export webapp to a temp war -->
-		<ABLWebAppPackage srcdir="${ROOT}" dlc="${DLC}" verbose="false" isIncremental="false" webAppName="GenericService_tmp" destdir="${WEBAPP.DIST.DIR}">
+		<ABLWebAppPackage srcdir="${ROOT}" dlc="${DLC}" verbose="false" isIncremental="false" webAppName="GenericService" destdir="${WEBAPP.DIST.DIR}">
 		</ABLWebAppPackage>
 		<!-- Update the war file to include r-code from build-output. Remove build files and output directories -->
-		<zip destfile="${WEBAPP.DIST.DIR}/${PROJECT.NAME}.war">
+		<zip destfile="${WEBAPP.DIST.DIR}/GenericService.war">
 			<zipfileset dir="${WEBAPP.BUILD.OUTPUT.DIR}" prefix="WEB-INF/openedge">
 				<include name="**/*.r" />
 				<exclude name="**/.pct" />
 			</zipfileset>
-			<zipfileset src="${WEBAPP.DIST.DIR}/GenericService_tmp.war">
+			<zipfileset src="${WEBAPP.DIST.DIR}/GenericService.war">
 				<exclude name="dist/**" />
 				<exclude name="output/**" />
 				<exclude name="build.xml" />
