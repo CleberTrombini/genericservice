@@ -30,4 +30,20 @@
 	      </propath>
 	    </ABLUnit>
 	</target>
+		<!-- Create the ablapp package -->
+	<target name="package" depends="clean, compile">
+		<!-- Build and package the webapp -->
+		<ant antfile="${WEBAPP}/build.xml" target="package" inheritall="false" />
+		<!-- Package ablapp as zip-->
+		<zip destfile="${DIST.DIR}/${PROJECT.NAME}.zip">
+			<zipfileset dir="tlr" prefix="tlr" />
+			<zipfileset dir="conf" prefix="conf" />
+			<!-- zipfileset file="startup.pf" prefix="conf" /-->
+			<zipfileset dir="${BUILD.OUTPUT.DIR}" prefix="openedge">
+				<include name="**/*.r" />
+				<exclude name="**/.pct" />
+			</zipfileset>
+			<zipfileset dir="${WEBAPP.DIST.DIR}" prefix="webapps" includes="*.war" />
+		</zip>
+	</target>
 </project>
