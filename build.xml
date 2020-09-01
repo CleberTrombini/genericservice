@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project name="QA Staging" basedir=".">
+	<property file="build.properties" />
 	<taskdef resource="PCT.properties" classpath="/var/jenkins_home/PCT.jar" />
 	<typedef resource="types.properties" classpath="/var/jenkins_home/PCT.jar"/>
-	<property file="build.properties" />
 	<target name="compile">
 		<tstamp/>
  		<mkdir dir="build"/>
