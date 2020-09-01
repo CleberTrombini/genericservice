@@ -1,1 +1,9 @@
-This directory can be used to store r-code related specifically to the web application you are deploying.
+<target name="test">
+    <ABLUnit>
+      <fileset dir="AppServer/tests" includes="**/*.cls" />
+      <propath>
+        <pathelement path="AppServer/tests" />
+        <pathelement path="AppServer" />
+      </propath>
+    </ABLUnit>
+</target>
