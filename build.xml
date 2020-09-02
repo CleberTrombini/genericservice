@@ -1,5 +1,11 @@
 <project name="QA Staging" basedir=".">
 	<property file="build.properties" />
+	<pathconvert property="ROOT" dirsep="/">
+	        <path location="${basedir}" />
+	    </pathconvert>
+
+	    <import file=".scripts/common-build-tasks.xml" />
+
 	<taskdef resource="PCT.properties" classpath="/var/jenkins_home/PCT.jar" />
 	<typedef resource="types.properties" classpath="/var/jenkins_home/PCT.jar"/>
 	<target name="compile">
