@@ -36,7 +36,7 @@
 	      </fileset>
 	</path>
 	<taskdef resource="PCT.properties" classpathref="pct.properties" />
-	<taskdef resource="net/sf/antcontrib/antlib.xml" classpath="${DLC}/ant/lib/ant-contrib-0.6.jar" />
+	<taskdef resource="net/sf/antcontrib/antlib.xml" classpath="${DLC}/ant/lib/ant-contrib-1.0b3.jar" />
 	
 	<!-- Taskdef needed to build ABLWEBAPP -->
 	
