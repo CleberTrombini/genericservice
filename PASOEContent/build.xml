@@ -30,7 +30,7 @@
     <target name="package" depends="clean, compile">    
         <mkdir dir="${WEBAPP.DIST.DIR}" />  
         <!-- Export webapp to a temp war -->
-        <ABLWebAppPackage srcdir="${ROOT}"  dlc="${DLC}" verbose="true" isIncremental="false" webAppName="${PROJECT.NAME}_tmp" destdir="${WEBAPP.DIST.DIR}">
+        <ABLWebAppPackage srcdir="${ROOT}" dlc="${DLC}" verbose="false" isIncremental="false" webAppName="${PROJECT.NAME}_tmp" destdir="${WEBAPP.DIST.DIR}">
         </ABLWebAppPackage>
         <!-- Update the war file to include r-code from build-output. Remove build files and output directories -->
         <zip destfile="${WEBAPP.DIST.DIR}/${PROJECT.NAME}.war">
